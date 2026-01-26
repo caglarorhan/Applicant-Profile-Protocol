@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Applicant Profile Protocol (APP) spec, schema, examples, and tools",
   "scripts": {
+    "start": "node index.js",
     "validate": "node src/validate.js examples/full.json && node src/validate.js examples/minimal.json",
     "export:jsonresume": "node src/exporters/jsonresume.js examples/full.json > dist/full.jsonresume.json",
     "export:europass": "node src/exporters/europass.js examples/full.json > dist/full.europass.xml",
