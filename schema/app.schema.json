@@ -1,5 +1,6 @@
 {
-  "$id": "https://app.dev/schema/app.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://app-protocol.org/schema/app-1.0.json",
   "title": "Applicant Profile Protocol (APP) v1",
   "type": "object",
   "additionalProperties": false,
@@ -11,8 +12,10 @@
       "required": ["name", "version", "id"],
       "properties": {
         "name": { "type": "string", "const": "ApplicantProfileProtocol" },
+        "shortName": { "type": "string", "const": "APP" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "id": { "type": "string", "format": "uri" }
+        "uri": { "type": "string", "format": "uri" },
+        "id": { "type": "string" }
       }
     },
     "basics": { "$ref": "#/$defs/basics" },

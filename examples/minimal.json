@@ -1,8 +1,10 @@
 {
   "protocol": {
     "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
     "version": "1.0.0",
-    "id": "urn:app:person:123e4567-e89b-12d3-a456-426614174000"
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:123e4567-e89b-12d3-a456-426614174000"
   },
   "basics": {
     "name": { "given": "Ada", "family": "Lovelace" },

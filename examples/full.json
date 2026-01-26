@@ -1,8 +1,10 @@
 {
   "protocol": {
     "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
     "version": "1.0.0",
-    "id": "urn:app:person:0b8f9b52-3e74-4c8a-9b65-2bcb31d7fd10"
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:0b8f9b52-3e74-4c8a-9b65-2bcb31d7fd10"
   },
   "basics": {
     "name": { "given": "Caglar", "family": "Orhan" },

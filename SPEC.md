@@ -34,6 +34,22 @@ Normative keywords: MUST, SHOULD, MAY follow RFC 2119 semantics.
 
 ---
 
+## 2.1 Namespace and Identifiers
+
+The canonical namespace for the Applicant Profile Protocol (APP) is:
+
+```
+https://app-protocol.org/
+```
+
+All specifications, schemas, and extensions MUST use this namespace.
+
+- Versioned spec URI: `https://app-protocol.org/spec/1.0`
+- Schema URI: `https://app-protocol.org/schema/app-1.0.json`
+- URN prefix: `urn:app-protocol:profile:<uuid>`
+
+---
+
 ## 3. Design Goals
 
 - JSON-first: Canonical representation is JSON.
