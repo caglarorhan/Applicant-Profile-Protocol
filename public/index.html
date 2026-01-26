@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Applicant Profile Protocol (APP)</title>
+  <meta name="description" content="An open, JSON-based protocol for representing job applicant profiles in a structured, interoperable, and extensible manner.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    header { text-align: center; padding: 3rem 0; }
+    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    header .tagline { color: var(--text-muted); font-size: 1.25rem; }
+    header .version { 
+      display: inline-block; 
+      background: var(--primary); 
+      color: white; 
+      padding: 0.25rem 0.75rem; 
+      border-radius: 9999px; 
+      font-size: 0.875rem; 
+      margin-top: 1rem; 
+    }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .card h3 { margin-bottom: 0.5rem; color: var(--primary); }
+    .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+    .card a {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+    .card a:hover { background: var(--primary-dark); }
+    .features { margin: 3rem 0; }
+    .features h2 { text-align: center; margin-bottom: 1.5rem; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .feature {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .feature .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .feature h4 { margin-bottom: 0.25rem; }
+    .feature p { color: var(--text-muted); font-size: 0.85rem; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      margin: 1.5rem 0;
+    }
+    code { font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace; }
+    .example-section { margin: 3rem 0; }
+    .example-section h2 { margin-bottom: 1rem; }
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Applicant Profile Protocol</h1>
+      <p class="tagline">An open, JSON-based protocol for structured applicant data</p>
+      <span class="version">v1.0.0 Draft</span>
+    </header>
+
+    <div class="cards">
+      <div class="card">
+        <h3>📄 Specification</h3>
+        <p>Full protocol specification with design goals, architecture, and field definitions.</p>
+        <a href="/spec/1.0">Read Spec</a>
+      </div>
+      <div class="card">
+        <h3>📐 JSON Schema</h3>
+        <p>Validate APP profiles with the official JSON Schema (draft 2020-12).</p>
+        <a href="/schema/app-1.0.json">View Schema</a>
+      </div>
+      <div class="card">
+        <h3>📝 Examples</h3>
+        <p>See minimal and full profile examples to get started quickly.</p>
+        <a href="/examples/full.json">Full Example</a>
+      </div>
+      <div class="card">
+        <h3>🐙 GitHub</h3>
+        <p>Source code, CLI tools, exporters, and contribution guidelines.</p>
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">View Repo</a>
+      </div>
+    </div>
+
+    <section class="features">
+      <h2>Why APP?</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="icon">📦</div>
+          <h4>JSON-First</h4>
+          <p>Human-readable, machine-validatable</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔗</div>
+          <h4>Interoperable</h4>
+          <p>Export to HR-XML, Europass, JSON Resume</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🤖</div>
+          <h4>AI-Ready</h4>
+          <p>Confidence metrics, embeddings, JSON-LD</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🛡️</div>
+          <h4>Extensible</h4>
+          <p>Layered architecture, optional enrichment</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔢</div>
+          <h4>Versioned</h4>
+          <p>Semantic versioning, backward compatible</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🌐</div>
+          <h4>Open Standard</h4>
+          <p>Community-driven, Apache-2.0 license</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="example-section">
+      <h2>Quick Example</h2>
+      <pre><code>{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
+    "version": "1.0.0",
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:abc123"
+  },
+  "basics": {
+    "name": { "given": "Ada", "family": "Lovelace" },
+    "headline": "Software Engineer",
+    "summary": "Passionate about reliable systems"
+  },
+  "skills": [
+    { "name": "TypeScript", "level": "Expert", "years": 6 }
+  ]
+}</code></pre>
+    </section>
+
+    <section class="example-section">
+      <h2>Validate with CLI</h2>
+      <pre><code>npm install -g applicant-profile-protocol
+app validate profile.json
+app export:jsonresume profile.json > resume.json</code></pre>
+    </section>
+
+    <footer>
+      <p>
+        <a href="/spec/1.0">Spec</a> · 
+        <a href="/schema/app-1.0.json">Schema</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol">GitHub</a> · 
+        <a href="/health">Status</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+</body>
+</html>

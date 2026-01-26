@@ -15,6 +15,8 @@ const MIME_TYPES = {
   '.md': 'text/markdown',
   '.xml': 'application/xml',
   '.txt': 'text/plain',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
 };
 
 function serveFile(res, filePath, contentType) {
@@ -40,7 +42,9 @@ const server = createServer((req, res) => {
   }
 
   // Routes
-  if (pathname === '/' || pathname === '/spec' || pathname === '/spec/1.0') {
+  if (pathname === '/') {
+    serveFile(res, join(__dirname, 'public', 'index.html'), 'text/html');
+  } else if (pathname === '/spec' || pathname === '/spec/1.0') {
     serveFile(res, join(__dirname, 'SPEC.md'), 'text/markdown');
   } else if (pathname === '/schema' || pathname === '/schema/app-1.0.json') {
     serveFile(res, join(__dirname, 'schema', 'app.schema.json'), 'application/json');
