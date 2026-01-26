@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://app-protocol.org/docs
+    about: Read the documentation and mapping guides
+  - name: 🌐 Online Tools
+    url: https://app-protocol.org/tools/builder
+    about: Use the online Profile Builder, Validator, Converter, and Importer
+  - name: 📐 Specification
+    url: https://app-protocol.org/spec/1.0
+    about: Read the full APP v1.0 specification
