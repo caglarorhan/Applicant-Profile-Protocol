@@ -1,5 +1,45 @@
 # Applicant Profile Protocol (APP)
 
+[![npm version](https://img.shields.io/npm/v/applicant-profile-protocol.svg)](https://www.npmjs.com/package/applicant-profile-protocol)
+[![npm downloads](https://img.shields.io/npm/dm/applicant-profile-protocol.svg)](https://www.npmjs.com/package/applicant-profile-protocol)
+[![License](https://img.shields.io/npm/l/applicant-profile-protocol.svg)](https://github.com/caglarorhan/Applicant-Profile-Protocol/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/caglarorhan/Applicant-Profile-Protocol.svg)](https://github.com/caglarorhan/Applicant-Profile-Protocol/stargazers)
+
+An open, JSON-based protocol for representing job applicant profiles in a structured, interoperable, and extensible manner.
+
+🌐 **Website:** [app-protocol.org](https://app-protocol.org) | 📦 **npm:** [applicant-profile-protocol](https://www.npmjs.com/package/applicant-profile-protocol)
+
+## Installation
+
+```bash
+# Install globally for CLI usage
+npm install -g applicant-profile-protocol
+
+# Or install locally in your project
+npm install applicant-profile-protocol
+```
+
+## Quick Start
+
+```bash
+# Validate an APP profile
+app validate your-profile.json
+
+# Export to JSON Resume format
+app export:jsonresume your-profile.json > resume.json
+
+# Export to Europass XML
+app export:europass your-profile.json > europass.xml
+
+# Export to HR-XML
+app export:hrxml your-profile.json > hrxml.xml
+
+# Export to JSON-LD (Schema.org)
+app export:jsonld your-profile.json > profile.jsonld
+```
+
+## Contents
+
 This repository contains the draft specification, JSON Schema, and examples for the Applicant Profile Protocol (APP).
 
 ## Contents
@@ -71,19 +111,27 @@ npm run export:hrxml
 npm run export:jsonld
 ```
 
-## Exporters (Planned)
+## Exporters
 
-Guides and mappers to export APP → other formats:
-- JSON Resume (implemented)
-- Europass XML (minimal subset implemented)
-- HR-XML (minimal subset implemented)
-- ATS-specific payloads (planned)
- - JSON-LD overlay (implemented)
+Export APP profiles to other formats:
+- ✅ JSON Resume (implemented)
+- ✅ Europass XML (implemented)
+- ✅ HR-XML (implemented)
+- ✅ JSON-LD / Schema.org (implemented)
+- 🔜 ATS-specific payloads (planned)
 
 ## Versioning
 
 - Protocol uses Semantic Versioning.
 - See `SPEC.md` for versioning policy.
+
+## License
+
+[Apache 2.0](LICENSE) — Open source, free to use and modify.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Governance (Draft)
 
