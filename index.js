@@ -66,12 +66,27 @@ const server = createServer((req, res) => {
     serveFile(res, join(__dirname, 'public', 'docs', 'mappings', 'hr-xml.html'), 'text/html');
   } else if (pathname === '/docs/aep-template') {
     serveFile(res, join(__dirname, 'public', 'docs', 'aep-template.html'), 'text/html');
+  } else if (pathname === '/tools/builder.html' || pathname === '/tools/builder') {
+    serveFile(res, join(__dirname, 'public', 'tools', 'builder.html'), 'text/html');
+  } else if (pathname === '/tools/validator.html' || pathname === '/tools/validator') {
+    serveFile(res, join(__dirname, 'public', 'tools', 'validator.html'), 'text/html');
+  } else if (pathname === '/tools/converter.html' || pathname === '/tools/converter') {
+    serveFile(res, join(__dirname, 'public', 'tools', 'converter.html'), 'text/html');
+  } else if (pathname === '/tools/importer.html' || pathname === '/tools/importer') {
+    serveFile(res, join(__dirname, 'public', 'tools', 'importer.html'), 'text/html');
+  } else if (pathname === '/tools' || pathname === '/tools/') {
+    // Redirect to main page tools section
+    res.writeHead(302, { 'Location': '/#tools' });
+    res.end();
   } else if (pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', protocol: 'APP', version: '1.0.0' }));
   } else {
-    // Try to serve static files from root
-    const filePath = join(__dirname, pathname);
+    // Try to serve static files from public folder first, then root
+    let filePath = join(__dirname, 'public', pathname);
+    if (!existsSync(filePath)) {
+      filePath = join(__dirname, pathname);
+    }
     const ext = extname(filePath);
     if (existsSync(filePath) && MIME_TYPES[ext]) {
       serveFile(res, filePath, MIME_TYPES[ext]);
@@ -92,6 +107,10 @@ const server = createServer((req, res) => {
           '/docs/mappings/europass',
           '/docs/mappings/hr-xml',
           '/docs/aep-template',
+          '/tools/builder',
+          '/tools/validator',
+          '/tools/converter',
+          '/tools/importer',
           '/health'
         ]
       }));
