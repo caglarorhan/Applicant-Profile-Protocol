@@ -21,6 +21,44 @@ Key properties:
 
 ---
 
+## 1.1 Why APP? (Motivation)
+
+### The Problem
+
+Existing standards for representing applicant/resume data are fragmented, outdated, or locked to specific vendors:
+
+| Standard | Limitation |
+|----------|------------|
+| **HR-XML** | Heavyweight XML, enterprise-focused, not developer-friendly |
+| **Europass** | EU-specific, tied to government infrastructure, not AI-ready |
+| **JSON Resume** | Developer-friendly but limited: no confidence metrics, no semantic layer, no evidence support |
+| **ATS Vendor APIs** | Proprietary, fragmented, no interoperability between platforms |
+
+### How APP Solves This
+
+APP combines the best ideas from all existing standards into one modern, open protocol:
+
+1. **Canonical Source of Truth** — APP is the master format; export to HR-XML, Europass, JSON Resume, or any ATS without data loss.
+
+2. **AI & ML Ready** — Built-in support for:
+   - Skill confidence scores (0.0–1.0)
+   - Usage recency and context
+   - Embedding references for vector search
+   - JSON-LD semantic layer for knowledge graphs
+
+3. **Verifiable Evidence** — Optional evidence layer supports:
+   - Credential URLs and hashes
+   - Verifiable Credentials (W3C VC)
+   - Signed attestations
+
+4. **Developer-First** — JSON format, readable schema, simple validation, modern tooling.
+
+5. **Enterprise-Ready** — Layered architecture scales from simple profiles to rich enterprise data.
+
+6. **Open Governance** — Community-driven, no vendor lock-in, Apache-2.0 license.
+
+---
+
 ## 2. Definitions
 
 Normative keywords: MUST, SHOULD, MAY follow RFC 2119 semantics.

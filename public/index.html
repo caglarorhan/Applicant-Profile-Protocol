@@ -127,37 +127,72 @@
 
     <section class="features">
       <h2>Why APP?</h2>
+      <p style="text-align: center; color: var(--text-muted); max-width: 700px; margin: 0 auto 2rem;">
+        Existing standards are fragmented, outdated, or locked to specific vendors. APP unifies the best ideas into one modern, open protocol.
+      </p>
       <div class="feature-grid">
         <div class="feature">
           <div class="icon">📦</div>
           <h4>JSON-First</h4>
-          <p>Human-readable, machine-validatable</p>
+          <p>Human-readable, machine-validatable. No XML complexity.</p>
         </div>
         <div class="feature">
           <div class="icon">🔗</div>
           <h4>Interoperable</h4>
-          <p>Export to HR-XML, Europass, JSON Resume</p>
+          <p>Export to HR-XML, Europass, JSON Resume, ATS formats</p>
         </div>
         <div class="feature">
           <div class="icon">🤖</div>
           <h4>AI-Ready</h4>
-          <p>Confidence metrics, embeddings, JSON-LD</p>
+          <p>Confidence scores, skill embeddings, JSON-LD semantic layer</p>
         </div>
         <div class="feature">
           <div class="icon">🛡️</div>
           <h4>Extensible</h4>
-          <p>Layered architecture, optional enrichment</p>
+          <p>Layered architecture: core + enrichment + evidence</p>
         </div>
         <div class="feature">
           <div class="icon">🔢</div>
           <h4>Versioned</h4>
-          <p>Semantic versioning, backward compatible</p>
+          <p>Semantic versioning, immutable specs, backward compatible</p>
         </div>
         <div class="feature">
           <div class="icon">🌐</div>
           <h4>Open Standard</h4>
-          <p>Community-driven, Apache-2.0 license</p>
+          <p>Community-driven, no vendor lock-in, Apache-2.0 license</p>
         </div>
+      </div>
+    </section>
+
+    <section class="example-section" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 2rem; margin: 3rem 0;">
+      <h2 style="margin-bottom: 1.5rem;">The Problem with Existing Standards</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div>
+          <h4 style="color: var(--primary);">HR-XML</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Mature but heavyweight XML. Enterprise-focused, not developer-friendly. Complex schemas that are hard to implement.</p>
+        </div>
+        <div>
+          <h4 style="color: var(--primary);">Europass</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">EU-specific, limited global adoption. Tied to government infrastructure. Not designed for AI/ML workflows.</p>
+        </div>
+        <div>
+          <h4 style="color: var(--primary);">JSON Resume</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Developer-friendly but limited scope. No confidence metrics, no semantic layer, no evidence/verification support.</p>
+        </div>
+        <div>
+          <h4 style="color: var(--primary);">ATS Vendor APIs</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Proprietary, fragmented. Each platform uses different field names. No interoperability between systems.</p>
+        </div>
+      </div>
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">APP solves this by:</h4>
+        <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.5rem;">
+          <li>Being the <strong>canonical source of truth</strong> that exports to all other formats</li>
+          <li>Supporting <strong>AI workflows</strong> with confidence metrics, embeddings, and semantic data</li>
+          <li>Providing <strong>verifiable evidence</strong> for credentials and claims</li>
+          <li>Staying <strong>simple for developers</strong> while powerful for enterprises</li>
+          <li>Remaining <strong>open and community-governed</strong> — no single vendor controls it</li>
+        </ul>
       </div>
     </section>
 
