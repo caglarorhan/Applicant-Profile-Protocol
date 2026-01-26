@@ -1,9 +1,22 @@
 {
   "name": "applicant-profile-protocol",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
-  "description": "Applicant Profile Protocol (APP) spec, schema, examples, and tools",
+  "description": "Applicant Profile Protocol (APP) - An open, JSON-based protocol for structured applicant profiles with validation and export tools",
+  "keywords": [
+    "resume",
+    "cv",
+    "applicant",
+    "profile",
+    "json-schema",
+    "hr",
+    "recruiting",
+    "json-resume",
+    "europass",
+    "hr-xml"
+  ],
+  "author": "Caglar Orhan",
+  "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
     "validate": "node src/validate.js examples/full.json && node src/validate.js examples/minimal.json",
@@ -15,24 +28,24 @@
   "bin": {
     "app": "src/cli.js"
   },
+  "files": [
+    "src/",
+    "schema/",
+    "examples/",
+    "SPEC.md",
+    "README.md"
+  ],
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1"
   },
   "main": "index.js",
-  "directories": {
-    "doc": "docs",
-    "example": "examples"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/caglarorhan/Applicant-Profile-Protocol.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/caglarorhan/Applicant-Profile-Protocol/issues"
   },
-  "homepage": "https://github.com/caglarorhan/Applicant-Profile-Protocol#readme"
+  "homepage": "https://app-protocol.org"
 }
