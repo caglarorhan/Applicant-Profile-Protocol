@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Converter - APP Tools</title>
+  <meta name="description" content="Convert your APP profile to JSON Resume, Europass, HR-XML, and JSON-LD formats.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.75rem; }
+    header a { color: var(--primary); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+    .panel h2 { 
+      margin-bottom: 1rem; 
+      font-size: 1.25rem;
+      color: var(--primary);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .input-section { margin-bottom: 1rem; }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .file-upload {
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+    .file-upload:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .file-upload.dragover { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+    .file-upload input { display: none; }
+    
+    .format-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .format-option {
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .format-option:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .format-option.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+    .format-option input { display: none; }
+    .format-option .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .format-option h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .format-option p { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover { background: #475569; }
+    
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    
+    .output-panel { position: sticky; top: 1rem; }
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .output-header h2 { margin: 0; border: none; padding: 0; }
+    .output-actions { display: flex; gap: 0.5rem; }
+    .output-actions button {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 0.375rem;
+      cursor: pointer;
+    }
+    .output-actions button:hover { background: var(--code-bg); }
+    
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.75rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .status {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .status.success { background: var(--success-bg); color: #065f46; }
+    .status.error { background: var(--danger-bg); color: #991b1b; }
+    .status.info { background: #dbeafe; color: #1e40af; }
+    
+    .format-info {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .format-info h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .format-info p { font-size: 0.85rem; color: var(--text-muted); }
+    .format-info a { color: var(--primary); }
+    
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔄 Profile Converter</h1>
+      <a href="/">← Back to APP Home</a>
+    </header>
+
+    <div class="layout">
+      <div class="panel">
+        <h2>📄 Input APP Profile</h2>
+        
+        <div class="file-upload" id="dropzone">
+          <p>📂 <strong>Drop APP JSON file here</strong> or click to browse</p>
+          <input type="file" id="file-input" accept=".json,application/json">
+        </div>
+
+        <div class="input-section">
+          <textarea id="app-input" placeholder="Or paste your APP JSON here..."></textarea>
+        </div>
+
+        <h3 style="font-size: 1rem; margin-bottom: 1rem;">Select Output Format</h3>
+        
+        <div class="format-selector">
+          <label class="format-option selected" onclick="selectFormat('jsonresume')">
+            <input type="radio" name="format" value="jsonresume" checked>
+            <div class="icon">📋</div>
+            <h4>JSON Resume</h4>
+            <p>Developer-friendly resume format</p>
+          </label>
+          <label class="format-option" onclick="selectFormat('europass')">
+            <input type="radio" name="format" value="europass">
+            <div class="icon">🇪🇺</div>
+            <h4>Europass XML</h4>
+            <p>European CV standard format</p>
+          </label>
+          <label class="format-option" onclick="selectFormat('hrxml')">
+            <input type="radio" name="format" value="hrxml">
+            <div class="icon">🏢</div>
+            <h4>HR-XML</h4>
+            <p>Enterprise HR data exchange</p>
+          </label>
+          <label class="format-option" onclick="selectFormat('jsonld')">
+            <input type="radio" name="format" value="jsonld">
+            <div class="icon">🔗</div>
+            <h4>JSON-LD</h4>
+            <p>Schema.org semantic data</p>
+          </label>
+        </div>
+
+        <button class="btn btn-primary" onclick="convert()">🔄 Convert</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+
+        <div class="format-info" id="format-info">
+          <h3>📋 JSON Resume</h3>
+          <p>JSON Resume is a community-driven open-source initiative to create a JSON-based standard for resumes. 
+          <a href="https://jsonresume.org" target="_blank">Learn more →</a></p>
+        </div>
+      </div>
+
+      <div class="panel output-panel">
+        <div class="output-header">
+          <h2 id="output-title">📤 Output</h2>
+          <div class="output-actions">
+            <button onclick="copyOutput()">📋 Copy</button>
+            <button onclick="downloadOutput()">⬇️ Download</button>
+          </div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <pre id="output">Select a format and click Convert to see the output...</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentFormat = 'jsonresume';
+    let currentOutput = '';
+    let appData = null;
+
+    const formatInfo = {
+      jsonresume: {
+        name: 'JSON Resume',
+        ext: 'json',
+        mime: 'application/json',
+        desc: 'JSON Resume is a community-driven open-source initiative to create a JSON-based standard for resumes. <a href="https://jsonresume.org" target="_blank">Learn more →</a>',
+        docLink: '/docs/mappings/json-resume.html'
+      },
+      europass: {
+        name: 'Europass XML',
+        ext: 'xml',
+        mime: 'application/xml',
+        desc: 'Europass is a European Union initiative to increase transparency of qualifications and mobility of citizens in Europe. <a href="/docs/mappings/europass.html" target="_blank">View mapping →</a>',
+        docLink: '/docs/mappings/europass.html'
+      },
+      hrxml: {
+        name: 'HR-XML',
+        ext: 'xml',
+        mime: 'application/xml',
+        desc: 'HR-XML is a suite of XML specifications for human resources management and recruiting. <a href="/docs/mappings/hr-xml.html" target="_blank">View mapping →</a>',
+        docLink: '/docs/mappings/hr-xml.html'
+      },
+      jsonld: {
+        name: 'JSON-LD',
+        ext: 'json',
+        mime: 'application/ld+json',
+        desc: 'JSON-LD is a method of encoding Linked Data using JSON, providing semantic context using Schema.org vocabulary. <a href="/docs/semantic/json-ld.html" target="_blank">View docs →</a>',
+        docLink: '/docs/semantic/json-ld.html'
+      }
+    };
+
+    // Format selection
+    function selectFormat(format) {
+      currentFormat = format;
+      document.querySelectorAll('.format-option').forEach(el => el.classList.remove('selected'));
+      document.querySelector(`input[value="${format}"]`).closest('.format-option').classList.add('selected');
+      
+      const info = formatInfo[format];
+      document.getElementById('format-info').innerHTML = `
+        <h3>📋 ${info.name}</h3>
+        <p>${info.desc}</p>
+      `;
+    }
+
+    // File handling
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('app-input').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    // Conversion functions
+    function escapeXml(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function toJSONResume(app) {
+      const basics = app.basics || {};
+      const name = basics.name ? [basics.name.given, basics.name.middle, basics.name.family].filter(Boolean).join(' ') : undefined;
+      const profiles = (basics.contact?.social || []).map(s => ({ network: s.label, url: s.url }));
+
+      const work = (app.experience || []).map(exp => ({
+        name: exp.organization?.name,
+        position: exp.role,
+        location: exp.location?.city,
+        startDate: exp.start ? `${exp.start}-01` : undefined,
+        endDate: exp.current ? undefined : (exp.end ? `${exp.end}-01` : undefined),
+        highlights: exp.highlights || [],
+        keywords: exp.technologies || [],
+        url: (exp.links || [])[0]?.url
+      }));
+
+      const education = (app.education || []).map(ed => ({
+        institution: ed.institution,
+        area: ed.area,
+        studyType: ed.degree,
+        startDate: ed.start,
+        endDate: ed.end,
+        score: ed.grade
+      }));
+
+      const skills = (app.skills || []).map(sk => ({
+        name: sk.name,
+        level: sk.level,
+        keywords: sk.aliases || []
+      }));
+
+      const projects = (app.projects || []).map(pr => ({
+        name: pr.name,
+        description: pr.description,
+        roles: pr.role ? [pr.role] : undefined,
+        keywords: pr.stack || [],
+        url: pr.links?.repository,
+        highlights: pr.highlights || []
+      }));
+
+      const languages = (app.languages || []).map(l => ({ language: l.name, fluency: l.proficiency }));
+
+      return {
+        $schema: 'https://jsonresume.org/schema',
+        basics: {
+          name,
+          label: basics.headline,
+          email: basics.contact?.email,
+          phone: basics.contact?.phone,
+          website: basics.contact?.website,
+          summary: basics.summary,
+          location: { 
+            countryCode: basics.location?.country, 
+            region: basics.location?.region, 
+            city: basics.location?.city 
+          },
+          profiles
+        },
+        work,
+        education,
+        skills,
+        projects,
+        languages
+      };
+    }
+
+    function toEuropassXML(app) {
+      const basics = app.basics || {};
+      const name = basics.name || {};
+      const contact = basics.contact || {};
+      const loc = basics.location || {};
+
+      const work = (app.experience || []).map(exp => `
+    <WorkExperience>
+      <Employer>${escapeXml(exp.organization?.name)}</Employer>
+      <Position>${escapeXml(exp.role)}</Position>
+      <Period>
+        <From>${escapeXml(exp.start)}</From>
+        ${exp.current ? '' : `<To>${escapeXml(exp.end || '')}</To>`}
+      </Period>
+      <ActivitiesAndResponsibilities>${escapeXml((exp.highlights || []).join('; '))}</ActivitiesAndResponsibilities>
+    </WorkExperience>`).join('\n');
+
+      const edu = (app.education || []).map(ed => `
+    <Education>
+      <Organisation>${escapeXml(ed.institution)}</Organisation>
+      <Title>${escapeXml(ed.degree)}</Title>
+      <StudiesField>${escapeXml(ed.area)}</StudiesField>
+      <Period><From>${escapeXml(ed.start)}</From><To>${escapeXml(ed.end)}</To></Period>
+    </Education>`).join('\n');
+
+      const languages = (app.languages || []).map(l => `
+    <Language>
+      <Name>${escapeXml(l.name)}</Name>
+      <Level>${escapeXml(l.proficiency)}</Level>
+    </Language>`).join('\n');
+
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<EuropassCV>
+  <Identification>
+    <PersonName>
+      <FirstName>${escapeXml(name.given)}</FirstName>
+      <LastName>${escapeXml(name.family)}</LastName>
+    </PersonName>
+    <Address>
+      <Country>${escapeXml(loc.country || '')}</Country>
+      <Region>${escapeXml(loc.region || '')}</Region>
+      <City>${escapeXml(loc.city || '')}</City>
+    </Address>
+    <ContactInfo>
+      <Email>${escapeXml(contact.email || '')}</Email>
+      <Phone>${escapeXml(contact.phone || '')}</Phone>
+      <Website>${escapeXml(contact.website || '')}</Website>
+    </ContactInfo>
+  </Identification>
+  <WorkExperiences>${work}
+  </WorkExperiences>
+  <Educations>${edu}
+  </Educations>
+  <Languages>${languages}
+  </Languages>
+</EuropassCV>`;
+    }
+
+    function toHRXML(app) {
+      const basics = app.basics || {};
+      const name = basics.name || {};
+
+      const skills = (app.skills || []).map(sk => `
+      <Competency>
+        <CompetencyName>${escapeXml(sk.name)}</CompetencyName>
+        ${sk.level ? `<CompetencyLevel>${escapeXml(sk.level)}</CompetencyLevel>` : ''}
+      </Competency>`).join('\n');
+
+      const work = (app.experience || []).map(exp => `
+      <EmployerOrg>
+        <EmployerOrgName>${escapeXml(exp.organization?.name)}</EmployerOrgName>
+        <PositionHistory>
+          <Title>${escapeXml(exp.role)}</Title>
+          <StartDate>${escapeXml(exp.start)}</StartDate>
+          ${exp.current ? '' : `<EndDate>${escapeXml(exp.end)}</EndDate>`}
+        </PositionHistory>
+      </EmployerOrg>`).join('\n');
+
+      const edu = (app.education || []).map(ed => `
+      <SchoolOrInstitution>
+        <SchoolName>${escapeXml(ed.institution)}</SchoolName>
+        <Degree>${escapeXml(ed.degree || '')}</Degree>
+        <Major>${escapeXml(ed.area || '')}</Major>
+        <DatesOfAttendance>
+          <StartDate>${escapeXml(ed.start || '')}</StartDate>
+          <EndDate>${escapeXml(ed.end || '')}</EndDate>
+        </DatesOfAttendance>
+      </SchoolOrInstitution>`).join('\n');
+
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<Resume>
+  <StructuredXMLResume>
+    <ContactInfo>
+      <PersonName>
+        <GivenName>${escapeXml(name.given)}</GivenName>
+        <FamilyName>${escapeXml(name.family)}</FamilyName>
+      </PersonName>
+    </ContactInfo>
+    <EmploymentHistory>${work}
+    </EmploymentHistory>
+    <EducationHistory>${edu}
+    </EducationHistory>
+    <Competencies>${skills}
+    </Competencies>
+  </StructuredXMLResume>
+</Resume>`;
+    }
+
+    function toJSONLD(app) {
+      const basics = app.basics || {};
+      const name = basics.name ? [basics.name.given, basics.name.middle, basics.name.family].filter(Boolean).join(' ') : undefined;
+      const email = basics.contact?.email;
+      const url = basics.contact?.website;
+
+      const knowsAbout = (app.skills || []).map(sk => ({
+        '@type': 'DefinedTerm',
+        name: sk.name
+      }));
+
+      const hasCredential = (app.credentials || []).map(cr => ({
+        '@type': 'EducationalOccupationalCredential',
+        name: cr.name,
+        issuer: cr.issuer,
+        identifier: cr.id,
+        url: cr.url
+      }));
+
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name,
+        email,
+        url,
+        knowsAbout,
+        hasCredential
+      };
+    }
+
+    // Main convert function
+    function convert() {
+      const input = document.getElementById('app-input').value.trim();
+      const statusEl = document.getElementById('status');
+      const outputEl = document.getElementById('output');
+      
+      if (!input) {
+        statusEl.className = 'status error';
+        statusEl.textContent = '⚠️ Please provide APP JSON input';
+        return;
+      }
+
+      try {
+        appData = JSON.parse(input);
+      } catch(e) {
+        statusEl.className = 'status error';
+        statusEl.textContent = '❌ Invalid JSON: ' + e.message;
+        return;
+      }
+
+      // Basic validation
+      if (!appData.protocol || !appData.basics) {
+        statusEl.className = 'status error';
+        statusEl.textContent = '❌ Invalid APP format: missing required protocol or basics section';
+        return;
+      }
+
+      let result;
+      const format = formatInfo[currentFormat];
+
+      try {
+        switch(currentFormat) {
+          case 'jsonresume':
+            result = JSON.stringify(toJSONResume(appData), null, 2);
+            break;
+          case 'europass':
+            result = toEuropassXML(appData);
+            break;
+          case 'hrxml':
+            result = toHRXML(appData);
+            break;
+          case 'jsonld':
+            result = JSON.stringify(toJSONLD(appData), null, 2);
+            break;
+        }
+
+        currentOutput = result;
+        outputEl.textContent = result;
+        statusEl.className = 'status success';
+        statusEl.textContent = `✅ Successfully converted to ${format.name}`;
+        document.getElementById('output-title').textContent = `📤 ${format.name} Output`;
+
+      } catch(e) {
+        statusEl.className = 'status error';
+        statusEl.textContent = '❌ Conversion error: ' + e.message;
+      }
+    }
+
+    // Copy output
+    function copyOutput() {
+      if (!currentOutput) {
+        alert('No output to copy. Please convert first.');
+        return;
+      }
+      navigator.clipboard.writeText(currentOutput).then(() => {
+        const statusEl = document.getElementById('status');
+        statusEl.className = 'status success';
+        statusEl.textContent = '📋 Copied to clipboard!';
+      });
+    }
+
+    // Download output
+    function downloadOutput() {
+      if (!currentOutput) {
+        alert('No output to download. Please convert first.');
+        return;
+      }
+      const format = formatInfo[currentFormat];
+      const blob = new Blob([currentOutput], { type: format.mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      const name = appData?.basics?.name;
+      const baseName = name ? `${name.given}-${name.family}`.toLowerCase().replace(/\s+/g, '-') : 'profile';
+      a.download = `${baseName}.${format.ext}`;
+      
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Load sample
+    async function loadSample() {
+      try {
+        const res = await fetch('/examples/full.json');
+        const sample = await res.text();
+        document.getElementById('app-input').value = sample;
+      } catch(e) {
+        alert('Failed to load sample');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validator - APP Tools</title>
+  <meta name="description" content="Validate your Applicant Profile Protocol (APP) JSON against the official schema.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.75rem; }
+    header a { color: var(--primary); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h2 { 
+      margin-bottom: 1rem; 
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+    
+    .input-methods {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .input-methods button {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .input-methods button.active {
+      border-color: var(--primary);
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+    }
+    .input-methods button:hover { border-color: var(--primary); }
+    
+    .input-area { margin-bottom: 1rem; }
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.85rem;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .file-upload {
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .file-upload:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .file-upload.dragover { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+    .file-upload input { display: none; }
+    .file-upload .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .file-upload p { color: var(--text-muted); }
+    
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover { background: #475569; }
+    
+    .result {
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .result.valid { background: var(--success-bg); border: 1px solid #6ee7b7; }
+    .result.invalid { background: var(--danger-bg); border: 1px solid #fca5a5; }
+    .result h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .result.valid h3 { color: #065f46; }
+    .result.invalid h3 { color: #991b1b; }
+    .result .icon { font-size: 1.5rem; }
+    
+    .error-list { margin: 0; padding-left: 1.25rem; }
+    .error-list li { 
+      margin-bottom: 0.75rem; 
+      color: #991b1b;
+    }
+    .error-list .path {
+      font-family: 'SF Mono', Consolas, monospace;
+      background: rgba(0,0,0,0.1);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.85rem;
+    }
+    .error-list .message { display: block; margin-top: 0.25rem; }
+    
+    .schema-info {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #1e40af;
+    }
+    .schema-info a { color: var(--primary); }
+    
+    .sample-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-left: 1rem;
+    }
+    
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>✅ JSON Validator</h1>
+      <a href="/">← Back to APP Home</a>
+    </header>
+
+    <div class="schema-info">
+      <strong>📐 Schema Version:</strong> APP v1.0.0 (JSON Schema draft 2020-12)<br>
+      <a href="/schema/app-1.0.json" target="_blank">View Full Schema</a> | 
+      <a href="/spec/1.0" target="_blank">Read Specification</a>
+    </div>
+
+    <div class="panel">
+      <h2>Input Your JSON</h2>
+      
+      <div class="input-methods">
+        <button class="active" onclick="showMethod('paste')">📝 Paste JSON</button>
+        <button onclick="showMethod('upload')">📂 Upload File</button>
+        <button class="sample-btn" onclick="loadSample()">Load sample JSON</button>
+      </div>
+
+      <div class="input-area" id="paste-area">
+        <textarea id="json-input" placeholder="Paste your APP JSON here..."></textarea>
+      </div>
+
+      <div class="input-area hidden" id="upload-area">
+        <div class="file-upload" id="dropzone">
+          <div class="icon">📄</div>
+          <p><strong>Drop your JSON file here</strong><br>or click to browse</p>
+          <input type="file" id="file-input" accept=".json,application/json">
+        </div>
+        <p id="file-name" style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;"></p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="validate()">🔍 Validate JSON</button>
+        <button class="btn btn-secondary" onclick="clearInput()">🗑️ Clear</button>
+        <button class="btn btn-secondary" onclick="formatJSON()">📐 Format JSON</button>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <div class="panel">
+      <h2>💡 Common Issues & Fixes</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        <div>
+          <h4 style="color: var(--danger); font-size: 0.95rem;">Missing required fields</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Ensure <code>protocol</code>, <code>basics</code>, and <code>basics.name</code> with <code>given</code> and <code>family</code> are present.</p>
+        </div>
+        <div>
+          <h4 style="color: var(--danger); font-size: 0.95rem;">Invalid date format</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Dates should be <code>YYYY-MM</code> format (e.g., "2024-06"). Years should be <code>YYYY</code>.</p>
+        </div>
+        <div>
+          <h4 style="color: var(--danger); font-size: 0.95rem;">Invalid enum values</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Check that skill levels, employment types, and other enums match exactly (case-sensitive).</p>
+        </div>
+        <div>
+          <h4 style="color: var(--danger); font-size: 0.95rem;">Additional properties</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">The schema is strict. Remove any properties not defined in the specification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AJV for validation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.12.0/ajv2020.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv-formats/2.1.1/ajv-formats.min.js"></script>
+  
+  <script>
+    let schema = null;
+    let ajv = null;
+    let validateFn = null;
+
+    // Load schema on page load
+    async function loadSchema() {
+      try {
+        const res = await fetch('/schema/app-1.0.json');
+        schema = await res.json();
+        ajv = new ajv2020({ allErrors: true, strict: false });
+        ajvFormats(ajv);
+        validateFn = ajv.compile(schema);
+      } catch(e) {
+        console.error('Failed to load schema:', e);
+        document.getElementById('result').innerHTML = `
+          <div class="result invalid">
+            <h3><span class="icon">⚠️</span> Schema Load Error</h3>
+            <p>Could not load the APP schema. Please try refreshing the page.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Switch input method
+    function showMethod(method) {
+      document.querySelectorAll('.input-methods button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('paste-area').classList.toggle('hidden', method !== 'paste');
+      document.getElementById('upload-area').classList.toggle('hidden', method !== 'upload');
+    }
+
+    // File upload handling
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+        alert('Please upload a JSON file.');
+        return;
+      }
+      document.getElementById('file-name').textContent = `Selected: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('json-input').value = e.target.result;
+        showMethod('paste');
+        document.querySelector('.input-methods button').click();
+      };
+      reader.readAsText(file);
+    }
+
+    // Validate JSON
+    function validate() {
+      const input = document.getElementById('json-input').value.trim();
+      const resultDiv = document.getElementById('result');
+
+      if (!input) {
+        resultDiv.innerHTML = `
+          <div class="result invalid">
+            <h3><span class="icon">⚠️</span> No Input</h3>
+            <p>Please paste or upload your JSON to validate.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Parse JSON
+      let data;
+      try {
+        data = JSON.parse(input);
+      } catch(e) {
+        resultDiv.innerHTML = `
+          <div class="result invalid">
+            <h3><span class="icon">❌</span> Invalid JSON Syntax</h3>
+            <p><strong>Error:</strong> ${e.message}</p>
+            <p style="margin-top: 0.5rem; color: #991b1b; font-size: 0.9rem;">
+              Check for missing commas, unclosed brackets, or invalid characters.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      // Validate against schema
+      if (!validateFn) {
+        resultDiv.innerHTML = `
+          <div class="result invalid">
+            <h3><span class="icon">⚠️</span> Schema Not Loaded</h3>
+            <p>Please wait for the schema to load and try again.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const valid = validateFn(data);
+
+      if (valid) {
+        resultDiv.innerHTML = `
+          <div class="result valid">
+            <h3><span class="icon">✅</span> Valid APP Profile!</h3>
+            <p>Your JSON conforms to the Applicant Profile Protocol v1.0 schema.</p>
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+              <strong>Profile Summary:</strong>
+              <ul style="margin-top: 0.5rem; padding-left: 1.25rem; color: #065f46;">
+                <li>Name: ${data.basics?.name?.given || ''} ${data.basics?.name?.family || ''}</li>
+                <li>Headline: ${data.basics?.headline || 'Not specified'}</li>
+                <li>Experience entries: ${(data.experience || []).length}</li>
+                <li>Education entries: ${(data.education || []).length}</li>
+                <li>Skills: ${(data.skills || []).length}</li>
+                <li>Credentials: ${(data.credentials || []).length}</li>
+              </ul>
+            </div>
+            <div style="margin-top: 1rem;">
+              <a href="/tools/converter.html" style="color: #065f46;">🔄 Convert to other formats →</a>
+            </div>
+          </div>
+        `;
+      } else {
+        const errors = validateFn.errors.map(err => {
+          const path = err.instancePath || '/';
+          let message = err.message;
+          if (err.keyword === 'enum') {
+            message += ` (allowed: ${err.params.allowedValues.join(', ')})`;
+          }
+          if (err.keyword === 'additionalProperties') {
+            message = `Unknown property "${err.params.additionalProperty}" is not allowed`;
+          }
+          return `<li><span class="path">${path}</span><span class="message">${message}</span></li>`;
+        }).join('');
+
+        resultDiv.innerHTML = `
+          <div class="result invalid">
+            <h3><span class="icon">❌</span> Validation Failed</h3>
+            <p>Found ${validateFn.errors.length} error(s):</p>
+            <ul class="error-list">${errors}</ul>
+            <div style="margin-top: 1rem;">
+              <a href="/tools/builder.html" style="color: #991b1b;">📝 Fix with Profile Builder →</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Format JSON
+    function formatJSON() {
+      const input = document.getElementById('json-input').value.trim();
+      if (!input) return;
+      try {
+        const parsed = JSON.parse(input);
+        document.getElementById('json-input').value = JSON.stringify(parsed, null, 2);
+      } catch(e) {
+        alert('Cannot format: Invalid JSON syntax');
+      }
+    }
+
+    // Clear input
+    function clearInput() {
+      document.getElementById('json-input').value = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('file-name').textContent = '';
+    }
+
+    // Load sample
+    async function loadSample() {
+      try {
+        const res = await fetch('/examples/full.json');
+        const sample = await res.text();
+        document.getElementById('json-input').value = sample;
+        showMethod('paste');
+        document.querySelector('.input-methods button').click();
+      } catch(e) {
+        alert('Failed to load sample');
+      }
+    }
+
+    // Initialize
+    loadSchema();
+  </script>
+</body>
+</html>

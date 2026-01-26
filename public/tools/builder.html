@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Builder - APP Tools</title>
+  <meta name="description" content="Create your Applicant Profile Protocol (APP) JSON using an intuitive form interface.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.75rem; }
+    header a { color: var(--primary); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    
+    .form-panel, .preview-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+    .form-panel h2, .preview-panel h2 { 
+      margin-bottom: 1rem; 
+      padding-bottom: 0.5rem; 
+      border-bottom: 1px solid var(--border);
+      font-size: 1.25rem;
+    }
+    
+    .section { margin-bottom: 1.5rem; }
+    .section h3 { 
+      font-size: 1rem; 
+      color: var(--primary); 
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section h3::before { content: '▼'; font-size: 0.7rem; transition: transform 0.2s; }
+    .section.collapsed h3::before { transform: rotate(-90deg); }
+    .section.collapsed .section-content { display: none; }
+    
+    .field { margin-bottom: 1rem; }
+    .field label { 
+      display: block; 
+      font-weight: 500; 
+      margin-bottom: 0.25rem; 
+      font-size: 0.9rem;
+    }
+    .field label .required { color: var(--danger); }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .field textarea { min-height: 80px; resize: vertical; }
+    .field .hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+    
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+    
+    .array-field { border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+    .array-field .item { 
+      background: var(--code-bg); 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .array-field .item .remove-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .add-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-btn:hover { background: var(--primary-dark); }
+    
+    .preview-panel { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: hidden; display: flex; flex-direction: column; }
+    .preview-panel h2 { flex-shrink: 0; }
+    .preview-content { flex: 1; overflow: auto; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .actions { 
+      display: flex; 
+      gap: 0.5rem; 
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover { background: #475569; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    
+    .status { 
+      padding: 0.5rem 1rem; 
+      border-radius: 0.375rem; 
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .status.success { background: #d1fae5; color: #065f46; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+    .status.info { background: #dbeafe; color: #1e40af; }
+    
+    .validation-errors { 
+      background: #fee2e2; 
+      border: 1px solid #fca5a5; 
+      border-radius: 0.5rem; 
+      padding: 1rem; 
+      margin-bottom: 1rem;
+    }
+    .validation-errors h4 { color: #991b1b; margin-bottom: 0.5rem; }
+    .validation-errors ul { padding-left: 1.25rem; color: #991b1b; font-size: 0.85rem; }
+    
+    .storage-info {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: #1e40af;
+      margin-bottom: 1rem;
+    }
+    .storage-info strong { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📝 Profile Builder</h1>
+      <a href="/">← Back to APP Home</a>
+    </header>
+
+    <div class="storage-info">
+      <strong>💾 Auto-Save:</strong> Your profile is automatically saved to your browser's localStorage. 
+      You can close this page and come back later to continue editing.
+    </div>
+
+    <div class="layout">
+      <div class="form-panel">
+        <h2>Build Your Profile</h2>
+        <form id="profileForm">
+          <!-- Protocol Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Protocol Information</h3>
+            <div class="section-content">
+              <div class="field-row">
+                <div class="field">
+                  <label>Version <span class="required">*</span></label>
+                  <input type="text" id="protocol-version" value="1.0.0" pattern="^\d+\.\d+\.\d+$" required>
+                  <p class="hint">Semantic version (e.g., 1.0.0)</p>
+                </div>
+                <div class="field">
+                  <label>Profile ID</label>
+                  <input type="text" id="protocol-id" placeholder="Auto-generated if empty">
+                  <p class="hint">Unique identifier for this profile</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basics Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Basic Information</h3>
+            <div class="section-content">
+              <div class="field-row">
+                <div class="field">
+                  <label>Given Name <span class="required">*</span></label>
+                  <input type="text" id="basics-name-given" required>
+                </div>
+                <div class="field">
+                  <label>Family Name <span class="required">*</span></label>
+                  <input type="text" id="basics-name-family" required>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Middle Name</label>
+                  <input type="text" id="basics-name-middle">
+                </div>
+                <div class="field">
+                  <label>Suffix</label>
+                  <input type="text" id="basics-name-suffix" placeholder="Jr., PhD, etc.">
+                </div>
+              </div>
+              <div class="field">
+                <label>Headline</label>
+                <input type="text" id="basics-headline" maxlength="200" placeholder="e.g., Senior Software Engineer">
+              </div>
+              <div class="field">
+                <label>Summary</label>
+                <textarea id="basics-summary" maxlength="2000" placeholder="A brief professional summary..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Location</h3>
+            <div class="section-content">
+              <div class="field-row">
+                <div class="field">
+                  <label>Country</label>
+                  <input type="text" id="location-country" placeholder="US, DE, UK, etc.">
+                </div>
+                <div class="field">
+                  <label>Region/State</label>
+                  <input type="text" id="location-region" placeholder="California, Bavaria, etc.">
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>City</label>
+                  <input type="text" id="location-city">
+                </div>
+                <div class="field">
+                  <label>Remote</label>
+                  <select id="location-remote">
+                    <option value="">Not specified</option>
+                    <option value="true">Yes, available for remote work</option>
+                    <option value="false">No, prefer on-site</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Contact Information</h3>
+            <div class="section-content">
+              <div class="field-row">
+                <div class="field">
+                  <label>Email</label>
+                  <input type="email" id="contact-email">
+                </div>
+                <div class="field">
+                  <label>Phone</label>
+                  <input type="tel" id="contact-phone" placeholder="+1-555-555-5555">
+                </div>
+              </div>
+              <div class="field">
+                <label>Website</label>
+                <input type="url" id="contact-website" placeholder="https://yoursite.com">
+              </div>
+              
+              <!-- Social Links -->
+              <div class="array-field">
+                <label><strong>Social Links</strong></label>
+                <div id="social-links-container"></div>
+                <button type="button" class="add-btn" onclick="addSocialLink()">+ Add Social Link</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Experience Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Work Experience</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="experience-container"></div>
+                <button type="button" class="add-btn" onclick="addExperience()">+ Add Experience</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Education Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Education</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="education-container"></div>
+                <button type="button" class="add-btn" onclick="addEducation()">+ Add Education</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Skills</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="skills-container"></div>
+                <button type="button" class="add-btn" onclick="addSkill()">+ Add Skill</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Projects</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="projects-container"></div>
+                <button type="button" class="add-btn" onclick="addProject()">+ Add Project</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credentials Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Credentials & Certifications</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="credentials-container"></div>
+                <button type="button" class="add-btn" onclick="addCredential()">+ Add Credential</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Languages Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Languages</h3>
+            <div class="section-content">
+              <div class="array-field">
+                <div id="languages-container"></div>
+                <button type="button" class="add-btn" onclick="addLanguage()">+ Add Language</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferences Section -->
+          <div class="section">
+            <h3 onclick="toggleSection(this)">Job Preferences</h3>
+            <div class="section-content">
+              <div class="field">
+                <label>Employment Types</label>
+                <div class="checkbox-group" id="pref-employment-types">
+                  <label><input type="checkbox" value="Full-time"> Full-time</label>
+                  <label><input type="checkbox" value="Part-time"> Part-time</label>
+                  <label><input type="checkbox" value="Contract"> Contract</label>
+                  <label><input type="checkbox" value="Internship"> Internship</label>
+                  <label><input type="checkbox" value="Temporary"> Temporary</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Work Mode</label>
+                <div class="checkbox-group" id="pref-work-mode">
+                  <label><input type="checkbox" value="Onsite"> On-site</label>
+                  <label><input type="checkbox" value="Remote"> Remote</label>
+                  <label><input type="checkbox" value="Hybrid"> Hybrid</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Open to Relocation</label>
+                <select id="pref-relocation">
+                  <option value="">Not specified</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Preferred Locations</label>
+                <input type="text" id="pref-locations" placeholder="US-TX, US-CA, DE (comma-separated)">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="preview-panel">
+        <h2>JSON Preview</h2>
+        <div class="actions">
+          <button class="btn btn-success" onclick="saveToStorage()">💾 Save</button>
+          <button class="btn btn-primary" onclick="copyToClipboard()">📋 Copy</button>
+          <button class="btn btn-warning" onclick="downloadJSON()">⬇️ Download</button>
+          <button class="btn btn-secondary" onclick="loadFromStorage()">📂 Load Saved</button>
+          <button class="btn btn-danger" onclick="clearForm()">🗑️ Clear</button>
+        </div>
+        <div id="status-message"></div>
+        <div id="validation-errors"></div>
+        <div class="preview-content">
+          <pre id="json-output">{}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'app-profile-draft';
+    let experienceCount = 0;
+    let educationCount = 0;
+    let skillCount = 0;
+    let projectCount = 0;
+    let credentialCount = 0;
+    let languageCount = 0;
+    let socialLinkCount = 0;
+
+    // Section toggle
+    function toggleSection(header) {
+      header.parentElement.classList.toggle('collapsed');
+    }
+
+    // Generate UUID
+    function generateUUID() {
+      return 'urn:app-protocol:profile:' + 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Add array items
+    function addSocialLink(data = {}) {
+      const container = document.getElementById('social-links-container');
+      const id = socialLinkCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `social-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field-row">
+          <div class="field">
+            <label>Platform</label>
+            <input type="text" class="social-label" value="${data.label || ''}" placeholder="GitHub, LinkedIn, etc.">
+          </div>
+          <div class="field">
+            <label>URL</label>
+            <input type="url" class="social-url" value="${data.url || ''}" placeholder="https://...">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addExperience(data = {}) {
+      const container = document.getElementById('experience-container');
+      const id = experienceCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `exp-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field">
+          <label>Role/Title <span class="required">*</span></label>
+          <input type="text" class="exp-role" value="${data.role || ''}" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Organization <span class="required">*</span></label>
+            <input type="text" class="exp-org" value="${data.organization?.name || ''}">
+          </div>
+          <div class="field">
+            <label>Industry</label>
+            <input type="text" class="exp-industry" value="${data.organization?.industry || ''}">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Start Date <span class="required">*</span></label>
+            <input type="month" class="exp-start" value="${data.start || ''}">
+          </div>
+          <div class="field">
+            <label>End Date</label>
+            <input type="month" class="exp-end" value="${data.end || ''}" ${data.current ? 'disabled' : ''}>
+          </div>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" class="exp-current" ${data.current ? 'checked' : ''} onchange="this.closest('.item').querySelector('.exp-end').disabled = this.checked; updatePreview();"> Currently working here</label>
+        </div>
+        <div class="field">
+          <label>Employment Type</label>
+          <select class="exp-type">
+            <option value="">Select...</option>
+            <option value="Full-time" ${data.employmentType === 'Full-time' ? 'selected' : ''}>Full-time</option>
+            <option value="Part-time" ${data.employmentType === 'Part-time' ? 'selected' : ''}>Part-time</option>
+            <option value="Contract" ${data.employmentType === 'Contract' ? 'selected' : ''}>Contract</option>
+            <option value="Internship" ${data.employmentType === 'Internship' ? 'selected' : ''}>Internship</option>
+            <option value="Temporary" ${data.employmentType === 'Temporary' ? 'selected' : ''}>Temporary</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Highlights</label>
+          <textarea class="exp-highlights" placeholder="One highlight per line...">${(data.highlights || []).join('\n')}</textarea>
+        </div>
+        <div class="field">
+          <label>Technologies</label>
+          <input type="text" class="exp-tech" value="${(data.technologies || []).join(', ')}" placeholder="TypeScript, React, Node.js (comma-separated)">
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addEducation(data = {}) {
+      const container = document.getElementById('education-container');
+      const id = educationCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `edu-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field">
+          <label>Institution <span class="required">*</span></label>
+          <input type="text" class="edu-institution" value="${data.institution || ''}" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Degree</label>
+            <input type="text" class="edu-degree" value="${data.degree || ''}" placeholder="BSc, MSc, PhD, etc.">
+          </div>
+          <div class="field">
+            <label>Field of Study</label>
+            <input type="text" class="edu-area" value="${data.area || ''}">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Start Year</label>
+            <input type="number" class="edu-start" value="${data.start || ''}" min="1950" max="2030">
+          </div>
+          <div class="field">
+            <label>End Year</label>
+            <input type="number" class="edu-end" value="${data.end || ''}" min="1950" max="2030">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Grade/GPA</label>
+            <input type="text" class="edu-grade" value="${data.grade || ''}">
+          </div>
+          <div class="field">
+            <label><input type="checkbox" class="edu-completed" ${data.completed ? 'checked' : ''}> Completed</label>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addSkill(data = {}) {
+      const container = document.getElementById('skills-container');
+      const id = skillCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `skill-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field-row">
+          <div class="field">
+            <label>Skill Name <span class="required">*</span></label>
+            <input type="text" class="skill-name" value="${data.name || ''}" required>
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select class="skill-category">
+              <option value="">Select...</option>
+              <option value="ProgrammingLanguage" ${data.category === 'ProgrammingLanguage' ? 'selected' : ''}>Programming Language</option>
+              <option value="Framework" ${data.category === 'Framework' ? 'selected' : ''}>Framework</option>
+              <option value="Library" ${data.category === 'Library' ? 'selected' : ''}>Library</option>
+              <option value="Tool" ${data.category === 'Tool' ? 'selected' : ''}>Tool</option>
+              <option value="CloudService" ${data.category === 'CloudService' ? 'selected' : ''}>Cloud Service</option>
+              <option value="Platform" ${data.category === 'Platform' ? 'selected' : ''}>Platform</option>
+              <option value="Datastore" ${data.category === 'Datastore' ? 'selected' : ''}>Datastore</option>
+              <option value="Methodology" ${data.category === 'Methodology' ? 'selected' : ''}>Methodology</option>
+              <option value="SoftSkill" ${data.category === 'SoftSkill' ? 'selected' : ''}>Soft Skill</option>
+              <option value="Domain" ${data.category === 'Domain' ? 'selected' : ''}>Domain</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Level</label>
+            <select class="skill-level">
+              <option value="">Select...</option>
+              <option value="Beginner" ${data.level === 'Beginner' ? 'selected' : ''}>Beginner</option>
+              <option value="Intermediate" ${data.level === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
+              <option value="Advanced" ${data.level === 'Advanced' ? 'selected' : ''}>Advanced</option>
+              <option value="Expert" ${data.level === 'Expert' ? 'selected' : ''}>Expert</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Years of Experience</label>
+            <input type="number" class="skill-years" value="${data.years || ''}" min="0" max="60" step="0.5">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addProject(data = {}) {
+      const container = document.getElementById('projects-container');
+      const id = projectCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `project-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field">
+          <label>Project Name <span class="required">*</span></label>
+          <input type="text" class="project-name" value="${data.name || ''}" required>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea class="project-desc">${data.description || ''}</textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Your Role</label>
+            <input type="text" class="project-role" value="${data.role || ''}">
+          </div>
+          <div class="field">
+            <label>Tech Stack</label>
+            <input type="text" class="project-stack" value="${(data.stack || []).join(', ')}" placeholder="Comma-separated">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Website URL</label>
+            <input type="url" class="project-website" value="${data.links?.website || ''}">
+          </div>
+          <div class="field">
+            <label>Repository URL</label>
+            <input type="url" class="project-repo" value="${data.links?.repository || ''}">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addCredential(data = {}) {
+      const container = document.getElementById('credentials-container');
+      const id = credentialCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `cred-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field">
+          <label>Credential Name <span class="required">*</span></label>
+          <input type="text" class="cred-name" value="${data.name || ''}" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Issuer <span class="required">*</span></label>
+            <input type="text" class="cred-issuer" value="${data.issuer || ''}">
+          </div>
+          <div class="field">
+            <label>Date Issued</label>
+            <input type="month" class="cred-date" value="${data.date || ''}">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Credential ID</label>
+            <input type="text" class="cred-id" value="${data.id || ''}">
+          </div>
+          <div class="field">
+            <label>Verification URL</label>
+            <input type="url" class="cred-url" value="${data.url || ''}">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    function addLanguage(data = {}) {
+      const container = document.getElementById('languages-container');
+      const id = languageCount++;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `lang-${id}`;
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updatePreview();">×</button>
+        <div class="field-row">
+          <div class="field">
+            <label>Language <span class="required">*</span></label>
+            <input type="text" class="lang-name" value="${data.name || ''}" required>
+          </div>
+          <div class="field">
+            <label>Proficiency <span class="required">*</span></label>
+            <select class="lang-proficiency">
+              <option value="">Select...</option>
+              <option value="Basic" ${data.proficiency === 'Basic' ? 'selected' : ''}>Basic</option>
+              <option value="Conversational" ${data.proficiency === 'Conversational' ? 'selected' : ''}>Conversational</option>
+              <option value="Professional" ${data.proficiency === 'Professional' ? 'selected' : ''}>Professional</option>
+              <option value="Fluent" ${data.proficiency === 'Fluent' ? 'selected' : ''}>Fluent</option>
+              <option value="Native" ${data.proficiency === 'Native' ? 'selected' : ''}>Native</option>
+            </select>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updatePreview();
+    }
+
+    // Build JSON from form
+    function buildJSON() {
+      const profile = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: document.getElementById('protocol-version').value || '1.0.0',
+          uri: 'https://app-protocol.org/spec/1.0',
+          id: document.getElementById('protocol-id').value || generateUUID()
+        },
+        basics: {
+          name: {
+            given: document.getElementById('basics-name-given').value,
+            family: document.getElementById('basics-name-family').value
+          }
+        }
+      };
+
+      // Optional name fields
+      const middle = document.getElementById('basics-name-middle').value;
+      const suffix = document.getElementById('basics-name-suffix').value;
+      if (middle) profile.basics.name.middle = middle;
+      if (suffix) profile.basics.name.suffix = suffix;
+
+      // Headline and summary
+      const headline = document.getElementById('basics-headline').value;
+      const summary = document.getElementById('basics-summary').value;
+      if (headline) profile.basics.headline = headline;
+      if (summary) profile.basics.summary = summary;
+
+      // Location
+      const loc = {};
+      const country = document.getElementById('location-country').value;
+      const region = document.getElementById('location-region').value;
+      const city = document.getElementById('location-city').value;
+      const remote = document.getElementById('location-remote').value;
+      if (country) loc.country = country;
+      if (region) loc.region = region;
+      if (city) loc.city = city;
+      if (remote) loc.remote = remote === 'true';
+      if (Object.keys(loc).length) profile.basics.location = loc;
+
+      // Contact
+      const contact = {};
+      const email = document.getElementById('contact-email').value;
+      const phone = document.getElementById('contact-phone').value;
+      const website = document.getElementById('contact-website').value;
+      if (email) contact.email = email;
+      if (phone) contact.phone = phone;
+      if (website) contact.website = website;
+
+      // Social links
+      const socialItems = document.querySelectorAll('#social-links-container .item');
+      if (socialItems.length) {
+        contact.social = [];
+        socialItems.forEach(item => {
+          const label = item.querySelector('.social-label').value;
+          const url = item.querySelector('.social-url').value;
+          if (label && url) contact.social.push({ label, url });
+        });
+        if (!contact.social.length) delete contact.social;
+      }
+      if (Object.keys(contact).length) profile.basics.contact = contact;
+
+      // Experience
+      const expItems = document.querySelectorAll('#experience-container .item');
+      if (expItems.length) {
+        profile.experience = [];
+        expItems.forEach(item => {
+          const exp = {
+            role: item.querySelector('.exp-role').value,
+            organization: { name: item.querySelector('.exp-org').value },
+            start: item.querySelector('.exp-start').value
+          };
+          const industry = item.querySelector('.exp-industry').value;
+          if (industry) exp.organization.industry = industry;
+          const current = item.querySelector('.exp-current').checked;
+          if (current) exp.current = true;
+          else {
+            const end = item.querySelector('.exp-end').value;
+            if (end) exp.end = end;
+          }
+          const type = item.querySelector('.exp-type').value;
+          if (type) exp.employmentType = type;
+          const highlights = item.querySelector('.exp-highlights').value.split('\n').map(h => h.trim()).filter(Boolean);
+          if (highlights.length) exp.highlights = highlights;
+          const tech = item.querySelector('.exp-tech').value.split(',').map(t => t.trim()).filter(Boolean);
+          if (tech.length) exp.technologies = tech;
+          if (exp.role && exp.organization.name && exp.start) {
+            profile.experience.push(exp);
+          }
+        });
+        if (!profile.experience.length) delete profile.experience;
+      }
+
+      // Education
+      const eduItems = document.querySelectorAll('#education-container .item');
+      if (eduItems.length) {
+        profile.education = [];
+        eduItems.forEach(item => {
+          const edu = { institution: item.querySelector('.edu-institution').value };
+          const degree = item.querySelector('.edu-degree').value;
+          const area = item.querySelector('.edu-area').value;
+          const start = item.querySelector('.edu-start').value;
+          const end = item.querySelector('.edu-end').value;
+          const grade = item.querySelector('.edu-grade').value;
+          const completed = item.querySelector('.edu-completed').checked;
+          if (degree) edu.degree = degree;
+          if (area) edu.area = area;
+          if (start) edu.start = start;
+          if (end) edu.end = end;
+          if (grade) edu.grade = grade;
+          if (completed) edu.completed = true;
+          if (edu.institution) profile.education.push(edu);
+        });
+        if (!profile.education.length) delete profile.education;
+      }
+
+      // Skills
+      const skillItems = document.querySelectorAll('#skills-container .item');
+      if (skillItems.length) {
+        profile.skills = [];
+        skillItems.forEach(item => {
+          const skill = { name: item.querySelector('.skill-name').value };
+          const category = item.querySelector('.skill-category').value;
+          const level = item.querySelector('.skill-level').value;
+          const years = item.querySelector('.skill-years').value;
+          if (category) skill.category = category;
+          if (level) skill.level = level;
+          if (years) skill.years = parseFloat(years);
+          if (skill.name) profile.skills.push(skill);
+        });
+        if (!profile.skills.length) delete profile.skills;
+      }
+
+      // Projects
+      const projectItems = document.querySelectorAll('#projects-container .item');
+      if (projectItems.length) {
+        profile.projects = [];
+        projectItems.forEach(item => {
+          const proj = { name: item.querySelector('.project-name').value };
+          const desc = item.querySelector('.project-desc').value;
+          const role = item.querySelector('.project-role').value;
+          const stack = item.querySelector('.project-stack').value.split(',').map(s => s.trim()).filter(Boolean);
+          const website = item.querySelector('.project-website').value;
+          const repo = item.querySelector('.project-repo').value;
+          if (desc) proj.description = desc;
+          if (role) proj.role = role;
+          if (stack.length) proj.stack = stack;
+          if (website || repo) {
+            proj.links = {};
+            if (website) proj.links.website = website;
+            if (repo) proj.links.repository = repo;
+          }
+          if (proj.name) profile.projects.push(proj);
+        });
+        if (!profile.projects.length) delete profile.projects;
+      }
+
+      // Credentials
+      const credItems = document.querySelectorAll('#credentials-container .item');
+      if (credItems.length) {
+        profile.credentials = [];
+        credItems.forEach(item => {
+          const cred = {
+            name: item.querySelector('.cred-name').value,
+            issuer: item.querySelector('.cred-issuer').value
+          };
+          const date = item.querySelector('.cred-date').value;
+          const id = item.querySelector('.cred-id').value;
+          const url = item.querySelector('.cred-url').value;
+          if (date) cred.date = date;
+          if (id) cred.id = id;
+          if (url) cred.url = url;
+          if (cred.name && cred.issuer) profile.credentials.push(cred);
+        });
+        if (!profile.credentials.length) delete profile.credentials;
+      }
+
+      // Languages
+      const langItems = document.querySelectorAll('#languages-container .item');
+      if (langItems.length) {
+        profile.languages = [];
+        langItems.forEach(item => {
+          const lang = {
+            name: item.querySelector('.lang-name').value,
+            proficiency: item.querySelector('.lang-proficiency').value
+          };
+          if (lang.name && lang.proficiency) profile.languages.push(lang);
+        });
+        if (!profile.languages.length) delete profile.languages;
+      }
+
+      // Preferences
+      const prefs = {};
+      const empTypes = [...document.querySelectorAll('#pref-employment-types input:checked')].map(c => c.value);
+      const workModes = [...document.querySelectorAll('#pref-work-mode input:checked')].map(c => c.value);
+      const relocation = document.getElementById('pref-relocation').value;
+      const prefLocs = document.getElementById('pref-locations').value.split(',').map(l => l.trim()).filter(Boolean);
+      if (empTypes.length) prefs.employmentType = empTypes;
+      if (workModes.length) prefs.workMode = workModes;
+      if (relocation) prefs.relocation = relocation === 'true';
+      if (prefLocs.length) prefs.preferredLocations = prefLocs;
+      if (Object.keys(prefs).length) profile.preferences = prefs;
+
+      // Metadata
+      profile.metadata = {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        source: 'SelfReported'
+      };
+
+      return profile;
+    }
+
+    // Update preview
+    function updatePreview() {
+      const json = buildJSON();
+      document.getElementById('json-output').textContent = JSON.stringify(json, null, 2);
+      // Auto-save
+      try {
+        localStorage.setItem(STORAGE_KEY + '-autosave', JSON.stringify(json));
+      } catch(e) {}
+    }
+
+    // Show status message
+    function showStatus(message, type = 'info') {
+      const el = document.getElementById('status-message');
+      el.className = 'status ' + type;
+      el.textContent = message;
+      setTimeout(() => { el.textContent = ''; el.className = ''; }, 3000);
+    }
+
+    // Actions
+    function saveToStorage() {
+      try {
+        const json = buildJSON();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(json));
+        showStatus('Profile saved to localStorage!', 'success');
+      } catch(e) {
+        showStatus('Error saving: ' + e.message, 'error');
+      }
+    }
+
+    function loadFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          loadProfile(JSON.parse(saved));
+          showStatus('Profile loaded from localStorage!', 'success');
+        } else {
+          showStatus('No saved profile found.', 'info');
+        }
+      } catch(e) {
+        showStatus('Error loading: ' + e.message, 'error');
+      }
+    }
+
+    function copyToClipboard() {
+      const json = document.getElementById('json-output').textContent;
+      navigator.clipboard.writeText(json).then(() => {
+        showStatus('Copied to clipboard!', 'success');
+      }).catch(() => {
+        showStatus('Failed to copy.', 'error');
+      });
+    }
+
+    function downloadJSON() {
+      const json = buildJSON();
+      const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const name = json.basics?.name;
+      const filename = name ? `${name.given}-${name.family}-app-profile.json` : 'app-profile.json';
+      a.download = filename.toLowerCase().replace(/\s+/g, '-');
+      a.click();
+      URL.revokeObjectURL(url);
+      showStatus('Download started!', 'success');
+    }
+
+    function clearForm() {
+      if (!confirm('Are you sure you want to clear the form? This will not delete your saved profile.')) return;
+      document.getElementById('profileForm').reset();
+      document.getElementById('social-links-container').innerHTML = '';
+      document.getElementById('experience-container').innerHTML = '';
+      document.getElementById('education-container').innerHTML = '';
+      document.getElementById('skills-container').innerHTML = '';
+      document.getElementById('projects-container').innerHTML = '';
+      document.getElementById('credentials-container').innerHTML = '';
+      document.getElementById('languages-container').innerHTML = '';
+      updatePreview();
+      showStatus('Form cleared.', 'info');
+    }
+
+    // Load profile data into form
+    function loadProfile(data) {
+      // Clear existing arrays
+      document.getElementById('social-links-container').innerHTML = '';
+      document.getElementById('experience-container').innerHTML = '';
+      document.getElementById('education-container').innerHTML = '';
+      document.getElementById('skills-container').innerHTML = '';
+      document.getElementById('projects-container').innerHTML = '';
+      document.getElementById('credentials-container').innerHTML = '';
+      document.getElementById('languages-container').innerHTML = '';
+
+      // Protocol
+      if (data.protocol) {
+        document.getElementById('protocol-version').value = data.protocol.version || '1.0.0';
+        document.getElementById('protocol-id').value = data.protocol.id || '';
+      }
+
+      // Basics
+      if (data.basics) {
+        if (data.basics.name) {
+          document.getElementById('basics-name-given').value = data.basics.name.given || '';
+          document.getElementById('basics-name-family').value = data.basics.name.family || '';
+          document.getElementById('basics-name-middle').value = data.basics.name.middle || '';
+          document.getElementById('basics-name-suffix').value = data.basics.name.suffix || '';
+        }
+        document.getElementById('basics-headline').value = data.basics.headline || '';
+        document.getElementById('basics-summary').value = data.basics.summary || '';
+
+        if (data.basics.location) {
+          document.getElementById('location-country').value = data.basics.location.country || '';
+          document.getElementById('location-region').value = data.basics.location.region || '';
+          document.getElementById('location-city').value = data.basics.location.city || '';
+          document.getElementById('location-remote').value = data.basics.location.remote === true ? 'true' : data.basics.location.remote === false ? 'false' : '';
+        }
+
+        if (data.basics.contact) {
+          document.getElementById('contact-email').value = data.basics.contact.email || '';
+          document.getElementById('contact-phone').value = data.basics.contact.phone || '';
+          document.getElementById('contact-website').value = data.basics.contact.website || '';
+          (data.basics.contact.social || []).forEach(s => addSocialLink(s));
+        }
+      }
+
+      // Experience
+      (data.experience || []).forEach(e => addExperience(e));
+
+      // Education
+      (data.education || []).forEach(e => addEducation(e));
+
+      // Skills
+      (data.skills || []).forEach(s => addSkill(s));
+
+      // Projects
+      (data.projects || []).forEach(p => addProject(p));
+
+      // Credentials
+      (data.credentials || []).forEach(c => addCredential(c));
+
+      // Languages
+      (data.languages || []).forEach(l => addLanguage(l));
+
+      // Preferences
+      if (data.preferences) {
+        (data.preferences.employmentType || []).forEach(t => {
+          const cb = document.querySelector(`#pref-employment-types input[value="${t}"]`);
+          if (cb) cb.checked = true;
+        });
+        (data.preferences.workMode || []).forEach(m => {
+          const cb = document.querySelector(`#pref-work-mode input[value="${m}"]`);
+          if (cb) cb.checked = true;
+        });
+        document.getElementById('pref-relocation').value = data.preferences.relocation === true ? 'true' : data.preferences.relocation === false ? 'false' : '';
+        document.getElementById('pref-locations').value = (data.preferences.preferredLocations || []).join(', ');
+      }
+
+      updatePreview();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add input listeners for live preview
+      document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('change', updatePreview);
+      });
+
+      // Try to load autosave
+      try {
+        const autosave = localStorage.getItem(STORAGE_KEY + '-autosave');
+        if (autosave) {
+          loadProfile(JSON.parse(autosave));
+        }
+      } catch(e) {}
+
+      updatePreview();
+    });
+
+    // Make loadProfile globally available for importer
+    window.loadProfileFromImport = loadProfile;
+  </script>
+</body>
+</html>

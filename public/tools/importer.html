@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importer - APP Tools</title>
+  <meta name="description" content="Import profiles from JSON Resume, Europass, HR-XML, and other formats to APP format.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.75rem; }
+    header a { color: var(--primary); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    
+    .steps {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .step {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .step.active { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .step.completed { border-color: var(--success); background: var(--success-bg); }
+    .step .number {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .step.active .number { background: var(--primary); color: white; }
+    .step.completed .number { background: var(--success); color: white; }
+    .step h3 { font-size: 0.9rem; margin: 0; }
+    
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h2 { 
+      margin-bottom: 1rem; 
+      font-size: 1.25rem;
+      color: var(--primary);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .format-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .format-option {
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .format-option:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .format-option.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+    .format-option input { display: none; }
+    .format-option .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .format-option h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .format-option p { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+    
+    .input-area { margin-bottom: 1rem; }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .file-upload {
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+    .file-upload:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .file-upload.dragover { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+    .file-upload input { display: none; }
+    .file-upload .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover { background: #475569; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    
+    .status {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .status.success { background: var(--success-bg); color: #065f46; }
+    .status.error { background: var(--danger-bg); color: #991b1b; }
+    .status.warning { background: var(--warning-bg); color: #92400e; }
+    .status.info { background: #dbeafe; color: #1e40af; }
+    
+    .mapping-info {
+      background: var(--warning-bg);
+      border: 1px solid #fcd34d;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .mapping-info h4 { color: #92400e; margin-bottom: 0.5rem; }
+    .mapping-info ul { 
+      padding-left: 1.25rem; 
+      color: #92400e; 
+      font-size: 0.85rem;
+      margin: 0;
+    }
+    
+    .preview-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) { .preview-section { grid-template-columns: 1fr; } }
+    
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.75rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .field-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .field-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .field-item:last-child { border-bottom: none; }
+    .field-item .label { color: var(--text-muted); }
+    .field-item .value { font-weight: 500; max-width: 60%; text-align: right; overflow: hidden; text-overflow: ellipsis; }
+    .field-item.missing { background: #fef3c7; }
+    .field-item.missing .label { color: #92400e; }
+    
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📥 Profile Importer</h1>
+      <a href="/">← Back to APP Home</a>
+    </header>
+
+    <div class="steps">
+      <div class="step active" id="step1">
+        <div class="number">1</div>
+        <h3>Select Format</h3>
+      </div>
+      <div class="step" id="step2">
+        <div class="number">2</div>
+        <h3>Provide Input</h3>
+      </div>
+      <div class="step" id="step3">
+        <div class="number">3</div>
+        <h3>Review & Complete</h3>
+      </div>
+      <div class="step" id="step4">
+        <div class="number">4</div>
+        <h3>Get APP JSON</h3>
+      </div>
+    </div>
+
+    <!-- Step 1: Select Format -->
+    <div class="panel" id="panel-step1">
+      <h2>Step 1: Select Source Format</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Choose the format of your existing profile data.</p>
+      
+      <div class="format-selector">
+        <label class="format-option selected" onclick="selectFormat('jsonresume')">
+          <input type="radio" name="format" value="jsonresume" checked>
+          <div class="icon">📋</div>
+          <h4>JSON Resume</h4>
+          <p>jsonresume.org format</p>
+        </label>
+        <label class="format-option" onclick="selectFormat('europass')">
+          <input type="radio" name="format" value="europass">
+          <div class="icon">🇪🇺</div>
+          <h4>Europass XML</h4>
+          <p>European CV standard</p>
+        </label>
+        <label class="format-option" onclick="selectFormat('hrxml')">
+          <input type="radio" name="format" value="hrxml">
+          <div class="icon">🏢</div>
+          <h4>HR-XML</h4>
+          <p>Enterprise HR format</p>
+        </label>
+        <label class="format-option" onclick="selectFormat('linkedin')">
+          <input type="radio" name="format" value="linkedin">
+          <div class="icon">💼</div>
+          <h4>LinkedIn JSON</h4>
+          <p>Data export format</p>
+        </label>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToStep(2)">Next: Provide Input →</button>
+    </div>
+
+    <!-- Step 2: Input Data -->
+    <div class="panel hidden" id="panel-step2">
+      <h2>Step 2: Provide Your <span id="format-name">JSON Resume</span> Data</h2>
+      
+      <div class="file-upload" id="dropzone">
+        <div class="icon">📄</div>
+        <p><strong>Drop your file here</strong> or click to browse</p>
+        <input type="file" id="file-input" accept=".json,.xml,application/json,application/xml,text/xml">
+      </div>
+
+      <div class="input-area">
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">Or paste your data below:</p>
+        <textarea id="source-input" placeholder="Paste your profile data here..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="importData()">Import & Parse →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Review & Complete -->
+    <div class="panel hidden" id="panel-step3">
+      <h2>Step 3: Review Imported Data</h2>
+      
+      <div id="import-status"></div>
+
+      <div class="mapping-info" id="missing-fields-info">
+        <h4>⚠️ Some APP fields could not be mapped</h4>
+        <p style="margin-bottom: 0.5rem; font-size: 0.85rem; color: #92400e;">
+          The following fields are recommended for a complete APP profile. You can add them using the Profile Builder.
+        </p>
+        <ul id="missing-fields-list"></ul>
+      </div>
+
+      <div class="preview-section">
+        <div>
+          <h3 style="margin-bottom: 1rem;">📊 Imported Fields</h3>
+          <div class="field-list" id="imported-fields"></div>
+        </div>
+        <div>
+          <h3 style="margin-bottom: 1rem;">📄 APP JSON Preview</h3>
+          <pre id="app-preview">{}</pre>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+        <button class="btn btn-warning" onclick="openInBuilder()">✏️ Complete in Builder</button>
+        <button class="btn btn-primary" onclick="goToStep(4)">Accept & Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Final Output -->
+    <div class="panel hidden" id="panel-step4">
+      <h2>Step 4: Your APP Profile</h2>
+      
+      <div class="status success">
+        ✅ Successfully imported and converted to APP format!
+      </div>
+
+      <div class="actions" style="margin-bottom: 1rem;">
+        <button class="btn btn-success" onclick="copyOutput()">📋 Copy JSON</button>
+        <button class="btn btn-primary" onclick="downloadOutput()">⬇️ Download</button>
+        <button class="btn btn-warning" onclick="openInBuilder()">✏️ Edit in Builder</button>
+        <button class="btn btn-secondary" onclick="validateOutput()">✅ Validate</button>
+      </div>
+
+      <pre id="final-output">{}</pre>
+
+      <div style="margin-top: 1.5rem; padding: 1rem; background: #dbeafe; border-radius: 0.5rem;">
+        <h4 style="color: #1e40af; margin-bottom: 0.5rem;">🎉 What's Next?</h4>
+        <ul style="padding-left: 1.25rem; color: #1e40af; font-size: 0.9rem;">
+          <li><a href="/tools/validator.html">Validate</a> your profile against the APP schema</li>
+          <li><a href="/tools/converter.html">Convert</a> to other formats (Europass, HR-XML, etc.)</li>
+          <li><a href="/tools/builder.html">Edit</a> your profile in the Profile Builder</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let currentFormat = 'jsonresume';
+    let importedData = null;
+    let appProfile = null;
+
+    const formatConfig = {
+      jsonresume: { name: 'JSON Resume', type: 'json', accept: '.json' },
+      europass: { name: 'Europass XML', type: 'xml', accept: '.xml' },
+      hrxml: { name: 'HR-XML', type: 'xml', accept: '.xml' },
+      linkedin: { name: 'LinkedIn JSON', type: 'json', accept: '.json' }
+    };
+
+    // Step navigation
+    function goToStep(step) {
+      currentStep = step;
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`step${i}`).classList.remove('active', 'completed');
+        document.getElementById(`panel-step${i}`).classList.add('hidden');
+      }
+      for (let i = 1; i < step; i++) {
+        document.getElementById(`step${i}`).classList.add('completed');
+      }
+      document.getElementById(`step${step}`).classList.add('active');
+      document.getElementById(`panel-step${step}`).classList.remove('hidden');
+    }
+
+    // Format selection
+    function selectFormat(format) {
+      currentFormat = format;
+      document.querySelectorAll('.format-option').forEach(el => el.classList.remove('selected'));
+      document.querySelector(`input[value="${format}"]`).closest('.format-option').classList.add('selected');
+      document.getElementById('format-name').textContent = formatConfig[format].name;
+    }
+
+    // File handling
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('source-input').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    // UUID generator
+    function generateUUID() {
+      return 'urn:app-protocol:profile:' + 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Import converters
+    function fromJSONResume(data) {
+      const app = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: '1.0.0',
+          uri: 'https://app-protocol.org/spec/1.0',
+          id: generateUUID()
+        },
+        basics: {
+          name: { given: '', family: '' }
+        }
+      };
+
+      // Parse name
+      if (data.basics?.name) {
+        const parts = data.basics.name.split(' ');
+        app.basics.name.given = parts[0] || '';
+        app.basics.name.family = parts.slice(1).join(' ') || '';
+      }
+
+      if (data.basics?.label) app.basics.headline = data.basics.label;
+      if (data.basics?.summary) app.basics.summary = data.basics.summary;
+
+      // Location
+      if (data.basics?.location) {
+        app.basics.location = {};
+        if (data.basics.location.countryCode) app.basics.location.country = data.basics.location.countryCode;
+        if (data.basics.location.region) app.basics.location.region = data.basics.location.region;
+        if (data.basics.location.city) app.basics.location.city = data.basics.location.city;
+      }
+
+      // Contact
+      const contact = {};
+      if (data.basics?.email) contact.email = data.basics.email;
+      if (data.basics?.phone) contact.phone = data.basics.phone;
+      if (data.basics?.url || data.basics?.website) contact.website = data.basics.url || data.basics.website;
+      if (data.basics?.profiles?.length) {
+        contact.social = data.basics.profiles.map(p => ({
+          label: p.network,
+          url: p.url
+        }));
+      }
+      if (Object.keys(contact).length) app.basics.contact = contact;
+
+      // Work experience
+      if (data.work?.length) {
+        app.experience = data.work.map(w => {
+          const exp = {
+            role: w.position,
+            organization: { name: w.name || w.company },
+            start: w.startDate ? w.startDate.substring(0, 7) : ''
+          };
+          if (w.endDate) exp.end = w.endDate.substring(0, 7);
+          else exp.current = true;
+          if (w.highlights?.length) exp.highlights = w.highlights;
+          if (w.keywords?.length) exp.technologies = w.keywords;
+          return exp;
+        }).filter(e => e.role && e.organization.name && e.start);
+      }
+
+      // Education
+      if (data.education?.length) {
+        app.education = data.education.map(e => {
+          const edu = { institution: e.institution };
+          if (e.studyType) edu.degree = e.studyType;
+          if (e.area) edu.area = e.area;
+          if (e.startDate) edu.start = e.startDate.substring(0, 4);
+          if (e.endDate) edu.end = e.endDate.substring(0, 4);
+          if (e.score) edu.grade = e.score;
+          return edu;
+        }).filter(e => e.institution);
+      }
+
+      // Skills
+      if (data.skills?.length) {
+        app.skills = data.skills.map(s => {
+          const skill = { name: s.name };
+          if (s.level) skill.level = s.level;
+          if (s.keywords?.length) skill.aliases = s.keywords;
+          return skill;
+        }).filter(s => s.name);
+      }
+
+      // Projects
+      if (data.projects?.length) {
+        app.projects = data.projects.map(p => {
+          const proj = { name: p.name };
+          if (p.description) proj.description = p.description;
+          if (p.roles?.length) proj.role = p.roles[0];
+          if (p.keywords?.length) proj.stack = p.keywords;
+          if (p.url) proj.links = { website: p.url };
+          if (p.highlights?.length) proj.highlights = p.highlights;
+          return proj;
+        }).filter(p => p.name);
+      }
+
+      // Languages
+      if (data.languages?.length) {
+        app.languages = data.languages.map(l => ({
+          name: l.language,
+          proficiency: mapProficiency(l.fluency)
+        })).filter(l => l.name && l.proficiency);
+      }
+
+      // Metadata
+      app.metadata = {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        source: 'Imported'
+      };
+
+      return app;
+    }
+
+    function mapProficiency(fluency) {
+      if (!fluency) return null;
+      const f = fluency.toLowerCase();
+      if (f.includes('native')) return 'Native';
+      if (f.includes('fluent') || f.includes('full')) return 'Fluent';
+      if (f.includes('professional') || f.includes('advanced')) return 'Professional';
+      if (f.includes('intermediate') || f.includes('conversational')) return 'Conversational';
+      return 'Basic';
+    }
+
+    function parseXML(xmlString) {
+      const parser = new DOMParser();
+      return parser.parseFromString(xmlString, 'text/xml');
+    }
+
+    function getXMLText(parent, tagName) {
+      const el = parent.getElementsByTagName(tagName)[0];
+      return el ? el.textContent.trim() : '';
+    }
+
+    function fromEuropassXML(xmlString) {
+      const doc = parseXML(xmlString);
+      const app = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: '1.0.0',
+          uri: 'https://app-protocol.org/spec/1.0',
+          id: generateUUID()
+        },
+        basics: {
+          name: {
+            given: getXMLText(doc, 'FirstName'),
+            family: getXMLText(doc, 'LastName')
+          }
+        }
+      };
+
+      // Location
+      const country = getXMLText(doc, 'Country');
+      const region = getXMLText(doc, 'Region');
+      const city = getXMLText(doc, 'City');
+      if (country || region || city) {
+        app.basics.location = {};
+        if (country) app.basics.location.country = country;
+        if (region) app.basics.location.region = region;
+        if (city) app.basics.location.city = city;
+      }
+
+      // Contact
+      const contact = {};
+      const email = getXMLText(doc, 'Email');
+      const phone = getXMLText(doc, 'Phone');
+      const website = getXMLText(doc, 'Website');
+      if (email) contact.email = email;
+      if (phone) contact.phone = phone;
+      if (website) contact.website = website;
+      if (Object.keys(contact).length) app.basics.contact = contact;
+
+      // Work Experience
+      const workExps = doc.getElementsByTagName('WorkExperience');
+      if (workExps.length) {
+        app.experience = Array.from(workExps).map(w => ({
+          role: getXMLText(w, 'Position'),
+          organization: { name: getXMLText(w, 'Employer') },
+          start: getXMLText(w, 'From'),
+          end: getXMLText(w, 'To') || undefined,
+          current: !getXMLText(w, 'To')
+        })).filter(e => e.role && e.organization.name);
+      }
+
+      // Education
+      const eduItems = doc.getElementsByTagName('Education');
+      if (eduItems.length) {
+        app.education = Array.from(eduItems).map(e => ({
+          institution: getXMLText(e, 'Organisation'),
+          degree: getXMLText(e, 'Title'),
+          area: getXMLText(e, 'StudiesField'),
+          start: getXMLText(e, 'From'),
+          end: getXMLText(e, 'To')
+        })).filter(e => e.institution);
+      }
+
+      // Languages
+      const langItems = doc.getElementsByTagName('Language');
+      if (langItems.length) {
+        app.languages = Array.from(langItems).map(l => ({
+          name: getXMLText(l, 'Name'),
+          proficiency: mapProficiency(getXMLText(l, 'Level'))
+        })).filter(l => l.name && l.proficiency);
+      }
+
+      app.metadata = {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        source: 'Imported'
+      };
+
+      return app;
+    }
+
+    function fromHRXML(xmlString) {
+      const doc = parseXML(xmlString);
+      const app = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: '1.0.0',
+          uri: 'https://app-protocol.org/spec/1.0',
+          id: generateUUID()
+        },
+        basics: {
+          name: {
+            given: getXMLText(doc, 'GivenName'),
+            family: getXMLText(doc, 'FamilyName')
+          }
+        }
+      };
+
+      // Work Experience
+      const employers = doc.getElementsByTagName('EmployerOrg');
+      if (employers.length) {
+        app.experience = Array.from(employers).map(e => ({
+          role: getXMLText(e, 'Title'),
+          organization: { name: getXMLText(e, 'EmployerOrgName') },
+          start: getXMLText(e, 'StartDate'),
+          end: getXMLText(e, 'EndDate') || undefined,
+          current: !getXMLText(e, 'EndDate')
+        })).filter(e => e.role && e.organization.name);
+      }
+
+      // Education
+      const schools = doc.getElementsByTagName('SchoolOrInstitution');
+      if (schools.length) {
+        app.education = Array.from(schools).map(s => ({
+          institution: getXMLText(s, 'SchoolName'),
+          degree: getXMLText(s, 'Degree'),
+          area: getXMLText(s, 'Major'),
+          start: getXMLText(s, 'StartDate'),
+          end: getXMLText(s, 'EndDate')
+        })).filter(e => e.institution);
+      }
+
+      // Skills
+      const competencies = doc.getElementsByTagName('Competency');
+      if (competencies.length) {
+        app.skills = Array.from(competencies).map(c => ({
+          name: getXMLText(c, 'CompetencyName'),
+          level: getXMLText(c, 'CompetencyLevel') || undefined
+        })).filter(s => s.name);
+      }
+
+      app.metadata = {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        source: 'Imported'
+      };
+
+      return app;
+    }
+
+    function fromLinkedIn(data) {
+      // LinkedIn data export format (simplified)
+      const app = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: '1.0.0',
+          uri: 'https://app-protocol.org/spec/1.0',
+          id: generateUUID()
+        },
+        basics: {
+          name: {
+            given: data.firstName || data.first_name || '',
+            family: data.lastName || data.last_name || ''
+          }
+        }
+      };
+
+      if (data.headline) app.basics.headline = data.headline;
+      if (data.summary) app.basics.summary = data.summary;
+
+      if (data.location) {
+        app.basics.location = { city: data.location };
+      }
+
+      if (data.emailAddress || data.email) {
+        app.basics.contact = { email: data.emailAddress || data.email };
+      }
+
+      // Positions
+      if (data.positions?.values?.length) {
+        app.experience = data.positions.values.map(p => ({
+          role: p.title,
+          organization: { name: p.company?.name },
+          start: p.startDate ? `${p.startDate.year}-${String(p.startDate.month || 1).padStart(2, '0')}` : '',
+          end: p.endDate ? `${p.endDate.year}-${String(p.endDate.month || 1).padStart(2, '0')}` : undefined,
+          current: p.isCurrent
+        })).filter(e => e.role && e.organization.name);
+      }
+
+      // Education
+      if (data.educations?.values?.length) {
+        app.education = data.educations.values.map(e => ({
+          institution: e.schoolName,
+          degree: e.degree,
+          area: e.fieldOfStudy,
+          start: e.startDate?.year?.toString(),
+          end: e.endDate?.year?.toString()
+        })).filter(e => e.institution);
+      }
+
+      // Skills
+      if (data.skills?.values?.length) {
+        app.skills = data.skills.values.map(s => ({
+          name: s.skill?.name || s.name
+        })).filter(s => s.name);
+      }
+
+      app.metadata = {
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        source: 'Imported'
+      };
+
+      return app;
+    }
+
+    // Main import function
+    function importData() {
+      const input = document.getElementById('source-input').value.trim();
+      const statusEl = document.getElementById('import-status');
+      
+      if (!input) {
+        alert('Please provide input data');
+        return;
+      }
+
+      try {
+        const config = formatConfig[currentFormat];
+        
+        if (config.type === 'json') {
+          importedData = JSON.parse(input);
+          if (currentFormat === 'jsonresume') {
+            appProfile = fromJSONResume(importedData);
+          } else if (currentFormat === 'linkedin') {
+            appProfile = fromLinkedIn(importedData);
+          }
+        } else if (config.type === 'xml') {
+          if (currentFormat === 'europass') {
+            appProfile = fromEuropassXML(input);
+          } else if (currentFormat === 'hrxml') {
+            appProfile = fromHRXML(input);
+          }
+        }
+
+        // Show step 3
+        goToStep(3);
+        displayImportResults();
+
+      } catch(e) {
+        alert('Error parsing input: ' + e.message);
+      }
+    }
+
+    function displayImportResults() {
+      const fieldsEl = document.getElementById('imported-fields');
+      const previewEl = document.getElementById('app-preview');
+      const missingEl = document.getElementById('missing-fields-list');
+      
+      // Build fields list
+      const fields = [];
+      
+      // Basic fields
+      if (appProfile.basics?.name?.given) fields.push({ label: 'Given Name', value: appProfile.basics.name.given });
+      if (appProfile.basics?.name?.family) fields.push({ label: 'Family Name', value: appProfile.basics.name.family });
+      if (appProfile.basics?.headline) fields.push({ label: 'Headline', value: appProfile.basics.headline });
+      if (appProfile.basics?.summary) fields.push({ label: 'Summary', value: appProfile.basics.summary.substring(0, 50) + '...' });
+      if (appProfile.basics?.contact?.email) fields.push({ label: 'Email', value: appProfile.basics.contact.email });
+      if (appProfile.basics?.location?.country) fields.push({ label: 'Country', value: appProfile.basics.location.country });
+      
+      // Arrays
+      if (appProfile.experience?.length) fields.push({ label: 'Experience', value: `${appProfile.experience.length} entries` });
+      if (appProfile.education?.length) fields.push({ label: 'Education', value: `${appProfile.education.length} entries` });
+      if (appProfile.skills?.length) fields.push({ label: 'Skills', value: `${appProfile.skills.length} entries` });
+      if (appProfile.projects?.length) fields.push({ label: 'Projects', value: `${appProfile.projects.length} entries` });
+      if (appProfile.languages?.length) fields.push({ label: 'Languages', value: `${appProfile.languages.length} entries` });
+
+      fieldsEl.innerHTML = fields.map(f => `
+        <div class="field-item">
+          <span class="label">${f.label}</span>
+          <span class="value">${f.value}</span>
+        </div>
+      `).join('');
+
+      // Missing fields
+      const missing = [];
+      if (!appProfile.basics?.name?.given) missing.push('Given name');
+      if (!appProfile.basics?.name?.family) missing.push('Family name');
+      if (!appProfile.basics?.headline) missing.push('Headline');
+      if (!appProfile.basics?.summary) missing.push('Summary');
+      if (!appProfile.basics?.contact?.email) missing.push('Email');
+      if (!appProfile.basics?.location) missing.push('Location');
+      if (!appProfile.experience?.length) missing.push('Work experience');
+      if (!appProfile.education?.length) missing.push('Education');
+      if (!appProfile.skills?.length) missing.push('Skills');
+      if (!appProfile.credentials?.length) missing.push('Credentials/certifications');
+      if (!appProfile.preferences) missing.push('Job preferences');
+
+      if (missing.length) {
+        document.getElementById('missing-fields-info').classList.remove('hidden');
+        missingEl.innerHTML = missing.map(m => `<li>${m}</li>`).join('');
+      } else {
+        document.getElementById('missing-fields-info').classList.add('hidden');
+      }
+
+      previewEl.textContent = JSON.stringify(appProfile, null, 2);
+      document.getElementById('final-output').textContent = JSON.stringify(appProfile, null, 2);
+    }
+
+    function openInBuilder() {
+      // Save to localStorage and redirect
+      localStorage.setItem('app-profile-draft', JSON.stringify(appProfile));
+      localStorage.setItem('app-profile-draft-autosave', JSON.stringify(appProfile));
+      window.location.href = '/tools/builder.html';
+    }
+
+    function copyOutput() {
+      const output = JSON.stringify(appProfile, null, 2);
+      navigator.clipboard.writeText(output).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+
+    function downloadOutput() {
+      const output = JSON.stringify(appProfile, null, 2);
+      const blob = new Blob([output], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const name = appProfile.basics?.name;
+      const filename = name ? `${name.given}-${name.family}-app-profile.json` : 'app-profile.json';
+      a.download = filename.toLowerCase().replace(/\s+/g, '-');
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function validateOutput() {
+      localStorage.setItem('app-validator-input', JSON.stringify(appProfile, null, 2));
+      window.location.href = '/tools/validator.html';
+    }
+  </script>
+</body>
+</html>

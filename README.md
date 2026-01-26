@@ -9,8 +9,9 @@ This repository contains the draft specification, JSON Schema, and examples for 
 - `examples/minimal.json`: Minimal valid APP profile
 - `examples/full.json`: Full featured example with semantic and evidence layers
 - `docs/mappings/`: Export mapping guides for JSON Resume, Europass, HR-XML
+- `docs/semantic/json-ld.md`: Guidance for the optional JSON-LD semantic layer
 - `src/`: Validator and exporters (Node.js)
- - `docs/semantic/json-ld.md`: Guidance for the optional JSON-LD semantic layer
+- `public/tools/`: Online tools for creating, validating, and converting profiles
 
 ## Validate an APP Profile
 
@@ -38,6 +39,15 @@ validate(instance=instance, schema=schema)
 print('valid')
 PY
 ```
+
+## Online Tools
+
+Use the browser-based tools at [app-protocol.org](https://app-protocol.org) — no installation required:
+
+- **[Profile Builder](https://app-protocol.org/tools/builder.html)** — Create APP profiles using an intuitive form interface. Saves drafts to localStorage.
+- **[Validator](https://app-protocol.org/tools/validator.html)** — Validate your APP JSON against the official schema with detailed error messages.
+- **[Converter](https://app-protocol.org/tools/converter.html)** — Export APP profiles to JSON Resume, Europass XML, HR-XML, or JSON-LD.
+- **[Importer](https://app-protocol.org/tools/importer.html)** — Import existing profiles from JSON Resume, Europass, HR-XML, or LinkedIn formats.
 
 ## CLI Usage (Node)
 
