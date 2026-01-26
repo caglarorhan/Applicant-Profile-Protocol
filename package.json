@@ -1,6 +1,6 @@
 {
   "name": "applicant-profile-protocol",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Applicant Profile Protocol (APP) - An open, JSON-based protocol for structured applicant profiles with validation and export tools",
   "keywords": [
@@ -13,9 +13,20 @@
     "recruiting",
     "json-resume",
     "europass",
-    "hr-xml"
+    "hr-xml",
+    "ats",
+    "applicant-tracking",
+    "career",
+    "job",
+    "employment",
+    "candidate",
+    "talent",
+    "hiring",
+    "schema",
+    "validation",
+    "cli"
   ],
-  "author": "Caglar Orhan",
+  "author": "Caglar Orhan <caglarorhan@gmail.com> (https://github.com/caglarorhan)",
   "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
@@ -33,11 +44,15 @@
     "schema/",
     "examples/",
     "SPEC.md",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "main": "index.js",
   "repository": {
