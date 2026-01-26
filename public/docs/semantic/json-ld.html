@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic Layer (JSON-LD) - APP</title>
+  <style>
+    :root { --primary: #2563eb; --primary-dark: #1d4ed8; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --code-bg: #f1f5f9; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    nav.breadcrumb { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav.breadcrumb a { color: var(--primary); text-decoration: none; }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+    p { margin-bottom: 1rem; }
+    ul { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; overflow-x: auto; font-size: 0.85rem; margin: 1rem 0; }
+    code { font-family: 'SF Mono', Consolas, monospace; font-size: 0.9em; }
+    p code, li code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 0.25rem; }
+    a { color: var(--primary); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/docs">Docs</a> / <span>Semantic Layer</span>
+    </nav>
+
+    <header>
+      <h1>Semantic Layer (JSON-LD)</h1>
+    </header>
+
+    <main>
+      <p>This document describes how to attach an optional JSON-LD semantic layer to an APP profile for interoperability with linked data ecosystems (Schema.org, ESCO, O*NET).</p>
+
+      <h2>Purpose</h2>
+      <ul>
+        <li>Enable search/AI systems to consume applicant profiles as linked data.</li>
+        <li>Preserve APP as the source of truth; semantic is an overlay.</li>
+      </ul>
+
+      <h2>Placement</h2>
+      <p>APP reserves the top-level field <code>semantic</code> for the JSON-LD object:</p>
+      <pre><code>{
+  "semantic": {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Example Person"
+  }
+}</code></pre>
+
+      <h2>Recommended Schema.org Types</h2>
+      <ul>
+        <li><strong>Person:</strong> core identity (<code>name</code>, <code>email</code>, <code>url</code>)</li>
+        <li><strong>Organization:</strong> for employers in experience (<code>worksFor</code>)</li>
+        <li><strong>EducationalOccupationalCredential:</strong> degrees, certificates (<code>hasCredential</code>)</li>
+        <li><strong>DefinedTerm:</strong> skills referencing taxonomies (<code>knowsAbout</code>)</li>
+      </ul>
+
+      <h2>Example (Person + Skills)</h2>
+      <pre><code>{
+  "semantic": {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Caglar Orhan",
+    "knowsAbout": [
+      { "@type": "DefinedTerm", "name": "TypeScript", "inDefinedTermSet": "ESCO" },
+      { "@type": "DefinedTerm", "name": "Next.js" }
+    ],
+    "hasCredential": [
+      { "@type": "EducationalOccupationalCredential", "name": "AWS SAA" }
+    ]
+  }
+}</code></pre>
+
+      <h2>Mapping Guidance</h2>
+      <ul>
+        <li>Basics → Person fields: <code>name</code>, <code>email</code>, <code>url</code></li>
+        <li>Skills → <code>knowsAbout</code> entries; optionally use <code>DefinedTerm</code></li>
+        <li>Credentials → <code>hasCredential</code> with <code>EducationalOccupationalCredential</code></li>
+        <li>Experience → Consider <code>Role</code> and <code>Organization</code>; minimal mapping is acceptable</li>
+      </ul>
+
+      <h2>Validation</h2>
+      <ul>
+        <li>JSON-LD is not validated by the APP JSON Schema.</li>
+        <li>Use JSON-LD tooling (e.g., RDF libraries) if needed; otherwise basic structural checks suffice.</li>
+      </ul>
+
+      <h2>Export</h2>
+      <p>A helper exporter is provided at <code>src/exporters/jsonld.js</code> to generate a minimal JSON-LD overlay from APP basics, skills, and credentials.</p>
+    </main>
+
+    <footer>
+      <p><a href="/">Home</a> · <a href="/spec/1.0" target="_blank">Spec</a> · <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a></p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+</body>
+</html>

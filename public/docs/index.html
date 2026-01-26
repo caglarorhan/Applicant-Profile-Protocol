@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation - APP</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; }
+    nav.breadcrumb { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav.breadcrumb a { color: var(--primary); text-decoration: none; }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; }
+    .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .doc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; }
+    .doc-card h3 { margin-bottom: 0.5rem; color: var(--primary); }
+    .doc-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .doc-card a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .doc-card a:hover { text-decoration: underline; }
+    a { color: var(--primary); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <span>Documentation</span>
+    </nav>
+
+    <header>
+      <h1>Documentation</h1>
+      <p style="color: var(--text-muted);">Guides, mappings, and references for the Applicant Profile Protocol.</p>
+    </header>
+
+    <main>
+      <h2>Core</h2>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3>📄 Specification</h3>
+          <p>Full protocol specification with design goals, architecture, and field definitions.</p>
+          <a href="/spec/1.0" target="_blank">Read Spec →</a>
+        </div>
+        <div class="doc-card">
+          <h3>📐 JSON Schema</h3>
+          <p>Validate APP profiles with the official JSON Schema.</p>
+          <a href="/schema/app-1.0.json" target="_blank">View Schema →</a>
+        </div>
+      </div>
+
+      <h2>Semantic Layer</h2>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3>🔗 JSON-LD Guide</h3>
+          <p>How to attach a semantic layer using JSON-LD and Schema.org.</p>
+          <a href="/docs/semantic/json-ld" target="_blank">Read Guide →</a>
+        </div>
+      </div>
+
+      <h2>Export Mappings</h2>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3>→ JSON Resume</h3>
+          <p>Field-by-field mapping to JSON Resume schema.</p>
+          <a href="/docs/mappings/json-resume" target="_blank">View Mapping →</a>
+        </div>
+        <div class="doc-card">
+          <h3>→ Europass XML</h3>
+          <p>Export APP profiles to Europass CV format.</p>
+          <a href="/docs/mappings/europass" target="_blank">View Mapping →</a>
+        </div>
+        <div class="doc-card">
+          <h3>→ HR-XML</h3>
+          <p>Simplified mapping to HR-XML Resume.</p>
+          <a href="/docs/mappings/hr-xml" target="_blank">View Mapping →</a>
+        </div>
+      </div>
+
+      <h2>Governance</h2>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3>📝 AEP Template</h3>
+          <p>Template for proposing changes or extensions to APP.</p>
+          <a href="/docs/aep-template" target="_blank">View Template →</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p><a href="/">Home</a> · <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>

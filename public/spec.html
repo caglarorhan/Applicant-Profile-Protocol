@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APP Specification v1.0</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header .meta { color: var(--text-muted); font-size: 0.9rem; }
+    header .meta span { margin-right: 1.5rem; }
+    nav.breadcrumb { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav.breadcrumb a { color: var(--primary); text-decoration: none; }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+    h4 { font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    code { font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9em; }
+    p code, li code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.75rem; text-align: left; }
+    th { background: var(--code-bg); font-weight: 600; }
+    .note { background: #eff6ff; border-left: 4px solid var(--primary); padding: 1rem; margin: 1rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+    a { color: var(--primary); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <span>Specification</span>
+    </nav>
+
+    <header>
+      <h1>Applicant Profile Protocol (APP)</h1>
+      <div class="meta">
+        <span><strong>Version:</strong> 1.0.0 (Draft)</span>
+        <span><strong>Status:</strong> Draft</span>
+        <span><strong>Authors:</strong> Community-driven</span>
+      </div>
+    </header>
+
+    <main>
+      <h2 id="overview">1. Overview</h2>
+      <p>The Applicant Profile Protocol (APP) is an open, JSON-based specification for representing a job applicant's professional profile in a structured, interoperable, and extensible manner.</p>
+      <p>APP is designed to act as a canonical source of truth for applicant data, enabling lossless export to existing formats such as ATS schemas, HR-XML, Europass, JSON Resume, and document-based formats (PDF, DOCX).</p>
+      <p><strong>Key properties:</strong></p>
+      <ul>
+        <li>Human-readable</li>
+        <li>Machine-validatable (JSON Schema)</li>
+        <li>AI-compatible (optional enrichment and semantic layers)</li>
+        <li>Export-friendly and lossless</li>
+        <li>Versioned and evolvable</li>
+      </ul>
+
+      <h2 id="motivation">1.1 Why APP? (Motivation)</h2>
+      <h3>The Problem</h3>
+      <p>Existing standards for representing applicant/resume data are fragmented, outdated, or locked to specific vendors:</p>
+      <table>
+        <thead><tr><th>Standard</th><th>Limitation</th></tr></thead>
+        <tbody>
+          <tr><td><strong>HR-XML</strong></td><td>Heavyweight XML, enterprise-focused, not developer-friendly</td></tr>
+          <tr><td><strong>Europass</strong></td><td>EU-specific, tied to government infrastructure, not AI-ready</td></tr>
+          <tr><td><strong>JSON Resume</strong></td><td>Developer-friendly but limited: no confidence metrics, no semantic layer, no evidence support</td></tr>
+          <tr><td><strong>ATS Vendor APIs</strong></td><td>Proprietary, fragmented, no interoperability between platforms</td></tr>
+        </tbody>
+      </table>
+
+      <h3>How APP Solves This</h3>
+      <p>APP combines the best ideas from all existing standards into one modern, open protocol:</p>
+      <ol>
+        <li><strong>Canonical Source of Truth</strong> — APP is the master format; export to HR-XML, Europass, JSON Resume, or any ATS without data loss.</li>
+        <li><strong>AI & ML Ready</strong> — Built-in support for skill confidence scores (0.0–1.0), usage recency, embedding references, and JSON-LD semantic layer.</li>
+        <li><strong>Verifiable Evidence</strong> — Optional evidence layer supports credential URLs, hashes, and W3C Verifiable Credentials.</li>
+        <li><strong>Developer-First</strong> — JSON format, readable schema, simple validation, modern tooling.</li>
+        <li><strong>Enterprise-Ready</strong> — Layered architecture scales from simple profiles to rich enterprise data.</li>
+        <li><strong>Open Governance</strong> — Community-driven, no vendor lock-in, Apache-2.0 license.</li>
+      </ol>
+
+      <h2 id="definitions">2. Definitions</h2>
+      <p>Normative keywords: MUST, SHOULD, MAY follow RFC 2119 semantics.</p>
+      <ul>
+        <li><strong>Profile:</strong> A single APP document describing one applicant.</li>
+        <li><strong>Core Layer:</strong> The required data model for an APP profile.</li>
+        <li><strong>Enrichment Layer:</strong> Optional analytical data (e.g., confidence metrics).</li>
+        <li><strong>Semantic Layer:</strong> Optional JSON-LD overlay for linked data interoperability.</li>
+        <li><strong>Evidence Layer:</strong> Optional verifiable references to support claims.</li>
+        <li><strong>Export Layer:</strong> Derived representations (e.g., HR-XML, Europass, JSON Resume).</li>
+      </ul>
+
+      <h3 id="namespace">2.1 Namespace and Identifiers</h3>
+      <p>The canonical namespace for the Applicant Profile Protocol (APP) is:</p>
+      <pre><code>https://app-protocol.org/</code></pre>
+      <p>All specifications, schemas, and extensions MUST use this namespace.</p>
+      <ul>
+        <li>Versioned spec URI: <code>https://app-protocol.org/spec/1.0</code></li>
+        <li>Schema URI: <code>https://app-protocol.org/schema/app-1.0.json</code></li>
+        <li>URN prefix: <code>urn:app-protocol:profile:&lt;uuid&gt;</code></li>
+      </ul>
+
+      <h2 id="design-goals">3. Design Goals</h2>
+      <ul>
+        <li><strong>JSON-first:</strong> Canonical representation is JSON.</li>
+        <li><strong>Layered Architecture:</strong> Core separated from enrichment, semantic, and evidence.</li>
+        <li><strong>Export-Oriented:</strong> Designed to convert cleanly into other standards.</li>
+        <li><strong>Non-Opinionated:</strong> No mandatory external taxonomy (ESCO, O*NET, etc.).</li>
+        <li><strong>AI-Ready:</strong> Confidence metrics, evidence, and embeddings supported.</li>
+        <li><strong>Versioned:</strong> Explicit protocol and schema versioning.</li>
+      </ul>
+      <p><strong>Non-goals:</strong></p>
+      <ul>
+        <li>Replace ATS/HR systems</li>
+        <li>Enforce a single skills taxonomy</li>
+        <li>Define hiring or ranking logic</li>
+        <li>Act as an identity/auth protocol (may integrate)</li>
+      </ul>
+
+      <h2 id="architecture">4. Protocol Architecture</h2>
+      <p>Applicant Profile Protocol (APP) uses a layered model:</p>
+      <ul>
+        <li><strong>Core Layer</strong> (Required, stable)</li>
+        <li><strong>Enrichment Layer</strong> (Optional, analytical)</li>
+        <li><strong>Semantic Layer</strong> (Optional, JSON-LD)</li>
+        <li><strong>Evidence Layer</strong> (Optional, verifiable data)</li>
+        <li><strong>Export Layer</strong> (Derived representations)</li>
+      </ul>
+      <p>Only the Core Layer is required for protocol compliance.</p>
+
+      <h2 id="core-layer">5. Core Layer (Required)</h2>
+
+      <h3>5.1 Top-Level Structure</h3>
+      <pre><code>{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
+    "version": "1.0.0",
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:&lt;uuid&gt;"
+  },
+  "basics": {},
+  "experience": [],
+  "education": [],
+  "skills": [],
+  "projects": [],
+  "credentials": [],
+  "languages": [],
+  "preferences": {},
+  "metadata": {},
+  "semantic": {},
+  "enrichment": {},
+  "evidence": []
+}</code></pre>
+
+      <h3>5.2 <code>basics</code></h3>
+      <pre><code>{
+  "name": { "given": "First", "family": "Last", "middle": "Optional" },
+  "headline": "Professional title",
+  "summary": "Short professional summary (max 2000 chars)",
+  "location": {
+    "country": "US",
+    "region": "Texas",
+    "city": "Austin",
+    "remote": true
+  },
+  "contact": {
+    "email": "user@example.com",
+    "phone": "+1-555-555-5555",
+    "website": "https://example.com",
+    "social": [
+      { "label": "GitHub", "url": "https://github.com/username" }
+    ]
+  }
+}</code></pre>
+
+      <h3>5.3 <code>experience</code></h3>
+      <pre><code>{
+  "role": "Job title",
+  "organization": { "name": "Company", "industry": "Technology" },
+  "start": "YYYY-MM",
+  "end": "YYYY-MM",
+  "current": true,
+  "employmentType": "Full-time",
+  "highlights": ["Key achievement"],
+  "technologies": ["Tech used"]
+}</code></pre>
+
+      <h3>5.4 <code>education</code></h3>
+      <pre><code>{
+  "institution": "University name",
+  "area": "Field of study",
+  "degree": "Degree or certification",
+  "start": "YYYY",
+  "end": "YYYY",
+  "completed": true,
+  "grade": "GPA or classification"
+}</code></pre>
+
+      <h3>5.5 <code>skills</code></h3>
+      <pre><code>{
+  "name": "Skill name",
+  "category": "ProgrammingLanguage | Framework | Tool | SoftSkill | Domain",
+  "level": "Beginner | Intermediate | Advanced | Expert",
+  "years": 5,
+  "confidence": 0.85,
+  "usage": { "lastUsed": "YYYY-MM", "contexts": ["Backend"] },
+  "evidenceRef": ["cred:aws-sa-2024"]
+}</code></pre>
+      <div class="note">
+        <strong>Note:</strong> <code>confidence</code> is self-reported or computed (0.0–1.0). Exporters MAY ignore unsupported fields.
+      </div>
+
+      <h3>5.6 <code>projects</code></h3>
+      <pre><code>{
+  "name": "Project name",
+  "description": "Short description",
+  "role": "Contributor role",
+  "stack": ["Technologies"],
+  "links": { "website": "https://...", "repository": "https://..." },
+  "highlights": ["Impact or result"]
+}</code></pre>
+
+      <h3>5.7 <code>credentials</code></h3>
+      <pre><code>{
+  "name": "Credential name",
+  "issuer": "Issuing organization",
+  "date": "YYYY-MM",
+  "id": "Credential identifier",
+  "url": "https://issuer.example/verify/123"
+}</code></pre>
+
+      <h3>5.8 <code>languages</code></h3>
+      <pre><code>{
+  "name": "Language name",
+  "proficiency": "Basic | Conversational | Professional | Fluent | Native"
+}</code></pre>
+
+      <h3>5.9 <code>preferences</code></h3>
+      <pre><code>{
+  "employmentType": ["Full-time", "Contract"],
+  "workMode": ["Remote", "Hybrid"],
+  "relocation": false,
+  "preferredLocations": ["US-CA", "US-TX"]
+}</code></pre>
+
+      <h3>5.10 <code>metadata</code></h3>
+      <pre><code>{
+  "created": "ISO-8601 timestamp",
+  "updated": "ISO-8601 timestamp",
+  "source": "SelfReported | Imported | Generated",
+  "tags": ["keyword-1", "keyword-2"]
+}</code></pre>
+
+      <h2 id="enrichment">6. Enrichment Layer (Optional)</h2>
+      <p>The enrichment layer adds analytical or AI-oriented data:</p>
+      <ul>
+        <li>Skill confidence computation</li>
+        <li>Experience weighting</li>
+        <li>Career trajectory metrics</li>
+        <li>Embedding references (vector IDs or URIs)</li>
+      </ul>
+      <p>This layer MUST NOT alter core semantics.</p>
+
+      <h2 id="semantic">7. Semantic Layer (Optional)</h2>
+      <p>APP supports JSON-LD for semantic interoperability:</p>
+      <pre><code>{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Example Person",
+  "knowsAbout": [
+    { "@type": "DefinedTerm", "name": "TypeScript", "inDefinedTermSet": "ESCO" }
+  ]
+}</code></pre>
+      <p>The semantic layer MAY reference: Schema.org, ESCO, O*NET, or custom vocabularies.</p>
+
+      <h2 id="evidence">8. Evidence Layer (Optional)</h2>
+      <p>Evidence provides verifiable backing for claims:</p>
+      <ul>
+        <li>Certificates</li>
+        <li>Signed documents</li>
+        <li>URLs and hashes</li>
+        <li>Verifiable Credentials (W3C VCs)</li>
+      </ul>
+
+      <h2 id="export">9. Export Layer</h2>
+      <p>APP is designed to export into:</p>
+      <ul>
+        <li>JSON Resume</li>
+        <li>HR-XML</li>
+        <li>Europass XML</li>
+        <li>ATS-specific schemas</li>
+        <li>PDF / DOCX / Markdown</li>
+      </ul>
+      <p><strong>Exporter guidance:</strong> Preserve meaning, gracefully degrade unsupported fields, avoid lossy round-trips. APP JSON is the source of truth.</p>
+
+      <h2 id="versioning">10. Versioning</h2>
+      <ul>
+        <li>Protocol versions follow Semantic Versioning (MAJOR.MINOR.PATCH).</li>
+        <li>Breaking changes increment MAJOR.</li>
+        <li>New optional fields increment MINOR.</li>
+        <li>Fixes or clarifications increment PATCH.</li>
+      </ul>
+
+      <h2 id="security">11. Security & Privacy Considerations</h2>
+      <ul>
+        <li>APP does not mandate storage or transport mechanisms.</li>
+        <li>PII MUST be handled by implementers.</li>
+        <li>Encryption, signing, and access control are recommended but out of scope.</li>
+        <li>Evidence layer MAY include cryptographic proofs.</li>
+      </ul>
+
+      <h2 id="governance">12. Governance (Proposed)</h2>
+      <ul>
+        <li>Open specification with public versioned repository.</li>
+        <li>Community-driven extensions (APP Enhancement Proposals).</li>
+        <li>Backward compatibility encouraged; clear deprecation pathways.</li>
+      </ul>
+
+      <h2 id="future">13. Future Extensions (Non-Normative)</h2>
+      <ul>
+        <li>Cryptographic signing</li>
+        <li>Verifiable credentials</li>
+        <li>AI embedding registries</li>
+        <li>Skill taxonomy bindings</li>
+        <li>Real-time profile updates</li>
+      </ul>
+
+      <h2 id="examples">14. Examples</h2>
+      <p>See <a href="/examples/minimal.json" target="_blank">examples/minimal.json</a> and <a href="/examples/full.json" target="_blank">examples/full.json</a>.</p>
+
+      <h2 id="changelog">15. Changelog</h2>
+      <ul>
+        <li><strong>1.0.0 (Draft):</strong> Initial public draft with Core, optional layers, schema, and examples.</li>
+      </ul>
+    </main>
+
+    <footer>
+      <p>
+        <a href="/">Home</a> · 
+        <a href="/schema/app-1.0.json" target="_blank">Schema</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+</body>
+</html>

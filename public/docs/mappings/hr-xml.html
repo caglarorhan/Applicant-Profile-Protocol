@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APP → HR-XML Mapping</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --code-bg: #f1f5f9; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; }
+    nav.breadcrumb { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav.breadcrumb a { color: var(--primary); text-decoration: none; }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+    p { margin-bottom: 1rem; }
+    ul { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { font-family: 'SF Mono', Consolas, monospace; font-size: 0.9em; background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 0.25rem; }
+    a { color: var(--primary); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/docs">Docs</a> / <a href="/docs/mappings">Mappings</a> / <span>HR-XML</span>
+    </nav>
+
+    <header>
+      <h1>APP → HR-XML Mapping</h1>
+      <p style="color: var(--text-muted);">Reference: <a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=hr-xml" target="_blank">HR-XML / OASIS</a></p>
+    </header>
+
+    <main>
+      <h2>Field Mapping (Simplified)</h2>
+
+      <h3>Resume Root</h3>
+      <p><code>&lt;Resume&gt;</code> is the root element.</p>
+
+      <h3>Person Name</h3>
+      <ul>
+        <li>APP <code>basics.name</code> → <code>&lt;PersonName&gt;&lt;GivenName&gt;</code> / <code>&lt;FamilyName&gt;</code></li>
+      </ul>
+
+      <h3>Competencies / Skills</h3>
+      <ul>
+        <li>APP <code>skills[]</code> → <code>&lt;Competencies&gt;&lt;Competency&gt;</code></li>
+        <li><code>name</code> → <code>&lt;CompetencyName&gt;</code></li>
+        <li><code>level</code> → <code>&lt;CompetencyLevel&gt;</code></li>
+      </ul>
+
+      <h3>Employment History</h3>
+      <ul>
+        <li>APP <code>experience[]</code> → <code>&lt;EmploymentHistory&gt;&lt;EmployerOrg&gt;</code></li>
+        <li><code>organization.name</code> → <code>&lt;EmployerOrgName&gt;</code></li>
+        <li><code>role</code> → <code>&lt;PositionHistory&gt;&lt;Title&gt;</code></li>
+        <li><code>start</code> → <code>&lt;StartDate&gt;</code></li>
+        <li><code>end</code> → <code>&lt;EndDate&gt;</code> (omit if current)</li>
+      </ul>
+
+      <h3>Education History</h3>
+      <ul>
+        <li>APP <code>education[]</code> → <code>&lt;EducationHistory&gt;&lt;SchoolOrInstitution&gt;</code></li>
+        <li><code>institution</code> → <code>&lt;SchoolName&gt;</code></li>
+        <li><code>degree</code> → <code>&lt;Degree&gt;</code></li>
+        <li><code>area</code> → <code>&lt;Major&gt;</code></li>
+      </ul>
+
+      <h2>Notes</h2>
+      <ul>
+        <li>HR-XML is broad; this mapping targets a minimal subset.</li>
+        <li>Unsupported APP fields are omitted.</li>
+      </ul>
+
+      <h2>Example</h2>
+      <p>See exporter implementation in <code>src/exporters/hrxml.js</code>.</p>
+    </main>
+
+    <footer>
+      <p><a href="/">Home</a> · <a href="/spec/1.0" target="_blank">Spec</a> · <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APP → JSON Resume Mapping</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --code-bg: #f1f5f9; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; }
+    nav.breadcrumb { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav.breadcrumb a { color: var(--primary); text-decoration: none; }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+    p { margin-bottom: 1rem; }
+    ul { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { font-family: 'SF Mono', Consolas, monospace; font-size: 0.9em; background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 0.25rem; }
+    a { color: var(--primary); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/docs">Docs</a> / <a href="/docs/mappings">Mappings</a> / <span>JSON Resume</span>
+    </nav>
+
+    <header>
+      <h1>APP → JSON Resume Mapping</h1>
+      <p style="color: var(--text-muted);">Reference: <a href="https://jsonresume.org/schema/" target="_blank">jsonresume.org/schema</a></p>
+    </header>
+
+    <main>
+      <h2>Field Mapping</h2>
+
+      <h3>Basics</h3>
+      <ul>
+        <li><code>basics.name</code>: combine <code>given</code>, <code>middle?</code>, <code>family</code></li>
+        <li><code>basics.email</code>: from <code>basics.contact.email</code></li>
+        <li><code>basics.phone</code>: from <code>basics.contact.phone</code></li>
+        <li><code>basics.website</code>: from <code>basics.contact.website</code></li>
+        <li><code>basics.summary</code>: from <code>basics.summary</code></li>
+        <li><code>basics.label</code>: from <code>basics.headline</code></li>
+        <li><code>basics.location</code>: map <code>country</code>, <code>region</code>, <code>city</code></li>
+        <li><code>basics.profiles[]</code>: from <code>basics.contact.social[]</code></li>
+      </ul>
+
+      <h3>Work Experience</h3>
+      <ul>
+        <li>APP <code>experience[]</code> → JSON Resume <code>work[]</code></li>
+        <li><code>organization.name</code> → <code>name</code></li>
+        <li><code>role</code> → <code>position</code></li>
+        <li><code>location.city</code> → <code>location</code></li>
+        <li><code>start</code> → <code>startDate</code> (YYYY-MM → YYYY-MM-01)</li>
+        <li><code>end|null</code> → <code>endDate</code> (omit if <code>current:true</code>)</li>
+        <li><code>highlights[]</code> → <code>highlights[]</code></li>
+        <li><code>technologies[]</code> → <code>keywords[]</code></li>
+      </ul>
+
+      <h3>Education</h3>
+      <ul>
+        <li>APP <code>education[]</code> → JSON Resume <code>education[]</code></li>
+        <li><code>institution</code> → <code>institution</code></li>
+        <li><code>area</code> → <code>area</code></li>
+        <li><code>degree</code> → <code>studyType</code></li>
+        <li><code>grade</code> → <code>score</code></li>
+      </ul>
+
+      <h3>Skills</h3>
+      <ul>
+        <li>APP <code>skills[]</code> → JSON Resume <code>skills[]</code></li>
+        <li><code>name</code> → <code>name</code></li>
+        <li><code>level</code> → <code>level</code></li>
+        <li><code>aliases[]</code> → <code>keywords[]</code></li>
+      </ul>
+
+      <h3>Projects</h3>
+      <ul>
+        <li>APP <code>projects[]</code> → JSON Resume <code>projects[]</code></li>
+        <li><code>name</code>, <code>description</code>, <code>role</code> → <code>name</code>, <code>description</code>, <code>roles[]</code></li>
+        <li><code>links.repository</code> → <code>url</code></li>
+        <li><code>stack[]</code> → <code>keywords[]</code></li>
+      </ul>
+
+      <h3>Languages</h3>
+      <ul>
+        <li>APP <code>languages[]</code> → JSON Resume <code>languages[]</code></li>
+        <li><code>name</code> → <code>language</code></li>
+        <li><code>proficiency</code> → <code>fluency</code></li>
+      </ul>
+
+      <h2>Degradation Rules</h2>
+      <ul>
+        <li>Omit unsupported fields (<code>confidence</code>, <code>usage</code>, <code>evidenceRef</code>).</li>
+        <li>Convert dates <code>YYYY-MM</code> to <code>YYYY-MM-01</code> where day is required.</li>
+        <li>Keep <code>current:true</code> by omitting <code>endDate</code>.</li>
+      </ul>
+
+      <h2>Example</h2>
+      <p>See exporter implementation in <code>src/exporters/jsonresume.js</code>.</p>
+    </main>
+
+    <footer>
+      <p><a href="/">Home</a> · <a href="/spec/1.0" target="_blank">Spec</a> · <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>
