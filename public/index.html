@@ -333,10 +333,16 @@
     </section>
 
     <section class="example-section">
-      <h2>Validate with CLI</h2>
-      <pre><code>npm install -g applicant-profile-protocol
-app validate profile.json
-app export:jsonresume profile.json > resume.json</code></pre>
+      <h2>Install CLI Tools</h2>
+      <h4 style="margin-bottom: 0.5rem;">From npm</h4>
+      <pre><code>npm install -g applicant-profile-protocol</code></pre>
+      <h4 style="margin-bottom: 0.5rem; margin-top: 1rem;">From GitHub Packages</h4>
+      <pre><code>npm config set @caglarorhan:registry https://npm.pkg.github.com
+npm install -g @caglarorhan/applicant-profile-protocol</code></pre>
+      <h4 style="margin-bottom: 0.5rem; margin-top: 1rem;">Usage</h4>
+      <pre><code>app validate profile.json
+app export:jsonresume profile.json > resume.json
+app export:europass profile.json > europass.xml</code></pre>
     </section>
 
     <footer>
