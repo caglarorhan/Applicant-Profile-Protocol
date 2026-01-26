@@ -1,0 +1,133 @@
+{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "version": "1.0.0",
+    "id": "urn:app:person:0b8f9b52-3e74-4c8a-9b65-2bcb31d7fd10"
+  },
+  "basics": {
+    "name": { "given": "Caglar", "family": "Orhan" },
+    "headline": "Senior Full-Stack Engineer",
+    "summary": "10+ years building scalable web systems",
+    "location": { "country": "US", "region": "Texas", "city": "Austin", "remote": true },
+    "contact": {
+      "email": "me@example.com",
+      "phone": "+1-555-555-5555",
+      "website": "https://example.com",
+      "social": [
+        { "label": "GitHub", "url": "https://github.com/caglarorhan" },
+        { "label": "LinkedIn", "url": "https://linkedin.com/in/caglarorhan" }
+      ]
+    },
+    "links": [
+      { "label": "Portfolio", "url": "https://example.com/portfolio" }
+    ]
+  },
+  "experience": [
+    {
+      "role": "Senior Software Engineer",
+      "organization": { "name": "Example Corp", "industry": "Technology" },
+      "start": "2019-03",
+      "current": true,
+      "location": { "country": "US", "region": "CA", "city": "San Francisco", "remote": true },
+      "employmentType": "Full-time",
+      "highlights": [
+        "Built multi-tenant SaaS platform",
+        "Led AI integration"
+      ],
+      "technologies": ["TypeScript", "Next.js", "Fastify"],
+      "metrics": { "teamSize": 8, "budgetUSD": 250000 },
+      "links": [{ "label": "Platform Overview", "url": "https://example.com/platform" }]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Example",
+      "area": "Computer Science",
+      "degree": "BSc",
+      "start": "2010",
+      "end": "2014",
+      "completed": true,
+      "grade": "3.8 GPA",
+      "links": [{ "label": "Transcript", "url": "https://example.com/transcript" }]
+    }
+  ],
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "ProgrammingLanguage",
+      "level": "Expert",
+      "years": 6,
+      "confidence": 0.95,
+      "usage": { "lastUsed": "2026-01", "contexts": ["Backend", "Frontend"] },
+      "aliases": ["TS"],
+      "evidenceRef": ["cred:ts-expert"]
+    },
+    {
+      "name": "Next.js",
+      "category": "Framework",
+      "level": "Advanced",
+      "years": 5,
+      "confidence": 0.9,
+      "usage": { "lastUsed": "2026-01", "contexts": ["Frontend"] }
+    }
+  ],
+  "projects": [
+    {
+      "name": "PicDia",
+      "description": "AI-powered photo memory platform",
+      "role": "Founder",
+      "stack": ["Next.js", "PostgreSQL", "AI"],
+      "links": {
+        "website": "https://picdia.com",
+        "repository": "https://github.com/example/picdia"
+      },
+      "highlights": ["Launched MVP in 3 months"]
+    }
+  ],
+  "credentials": [
+    {
+      "name": "AWS Solutions Architect Associate",
+      "issuer": "Amazon Web Services",
+      "date": "2024-06",
+      "id": "AWS-1234567",
+      "url": "https://aws.example/verify/AWS-1234567"
+    }
+  ],
+  "languages": [
+    { "name": "English", "proficiency": "Native" },
+    { "name": "Turkish", "proficiency": "Fluent" }
+  ],
+  "preferences": {
+    "employmentType": ["Full-time", "Contract"],
+    "workMode": ["Remote", "Hybrid"],
+    "relocation": false,
+    "preferredLocations": ["US-TX", "US-CA"]
+  },
+  "metadata": {
+    "created": "2026-01-25T00:00:00Z",
+    "updated": "2026-01-25T00:00:00Z",
+    "source": "SelfReported",
+    "tags": ["full-stack", "ai", "nextjs"]
+  },
+  "semantic": {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Caglar Orhan",
+    "knowsAbout": [
+      { "@type": "DefinedTerm", "name": "TypeScript", "inDefinedTermSet": "ESCO" }
+    ]
+  },
+  "evidence": [
+    {
+      "type": "URL",
+      "url": "https://example.com/case-study",
+      "description": "Case study for SaaS platform"
+    },
+    {
+      "type": "VerifiableCredential",
+      "url": "https://example.com/vc/credential.json",
+      "description": "Signed VC for AWS cert",
+      "refId": "cred:aws-sa-2024"
+    }
+  ]
+}

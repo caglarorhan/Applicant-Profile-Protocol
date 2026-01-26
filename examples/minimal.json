@@ -1,0 +1,20 @@
+{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "version": "1.0.0",
+    "id": "urn:app:person:123e4567-e89b-12d3-a456-426614174000"
+  },
+  "basics": {
+    "name": { "given": "Ada", "family": "Lovelace" },
+    "headline": "Software Engineer",
+    "summary": "Engineer passionate about reliable systems and developer experience"
+  },
+  "experience": [],
+  "education": [],
+  "skills": [],
+  "projects": [],
+  "credentials": [],
+  "languages": [],
+  "preferences": {},
+  "metadata": { "created": "2026-01-25T00:00:00Z", "source": "SelfReported" }
+}
