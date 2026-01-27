@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APP Profile Examples - Applicant Profile Protocol</title>
+  <meta name="description" content="Real-world Applicant Profile Protocol examples across 10 industries: Software Engineer, Healthcare, Marketing, Data Science, and more.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    header { text-align: center; padding: 2rem 0 3rem; }
+    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    header .tagline { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1rem; }
+    header .back-link { 
+      display: inline-block;
+      color: var(--primary);
+      text-decoration: none;
+      margin-top: 1rem;
+    }
+    header .back-link:hover { text-decoration: underline; }
+    
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+    .toc h2 { margin-bottom: 1rem; }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+    .toc-item {
+      display: block;
+      padding: 0.75rem;
+      background: var(--bg);
+      border-radius: 0.5rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .toc-item:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateX(4px);
+    }
+    .toc-item .number { 
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .toc-item:hover .number { color: white; }
+    
+    .example {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+    .example h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .example .meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 2rem;
+    }
+    .example .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      position: relative;
+    }
+    code {
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--primary-dark);
+    }
+    .copy-btn.copied {
+      background: #10b981;
+    }
+    
+    .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .actions a, .actions button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .actions .primary {
+      background: var(--primary);
+      color: white;
+    }
+    .actions .primary:hover {
+      background: var(--primary-dark);
+    }
+    .actions .secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .actions .secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>APP Profile Examples</h1>
+      <p class="tagline">Real-world examples across 10 industries and career levels</p>
+      <a href="/" class="back-link">← Back to Home</a>
+    </header>
+
+    <div class="toc">
+      <h2>📋 Table of Contents</h2>
+      <div class="toc-grid">
+        <a href="#software-engineer" class="toc-item">
+          <span class="number">1.</span> Software Engineer
+        </a>
+        <a href="#healthcare" class="toc-item">
+          <span class="number">2.</span> Healthcare Professional
+        </a>
+        <a href="#marketing" class="toc-item">
+          <span class="number">3.</span> Marketing Manager
+        </a>
+        <a href="#data-scientist" class="toc-item">
+          <span class="number">4.</span> Data Scientist
+        </a>
+        <a href="#mechanical-engineer" class="toc-item">
+          <span class="number">5.</span> Mechanical Engineer
+        </a>
+        <a href="#ux-designer" class="toc-item">
+          <span class="number">6.</span> UX Designer
+        </a>
+        <a href="#financial-analyst" class="toc-item">
+          <span class="number">7.</span> Financial Analyst
+        </a>
+        <a href="#sales" class="toc-item">
+          <span class="number">8.</span> Sales Representative
+        </a>
+        <a href="#teacher" class="toc-item">
+          <span class="number">9.</span> Teacher
+        </a>
+        <a href="#recent-grad" class="toc-item">
+          <span class="number">10.</span> Recent Graduate
+        </a>
+      </div>
+    </div>
+
+    <!-- Example 1: Software Engineer -->
+    <div id="software-engineer" class="example">
+      <h2>1. Software Engineer</h2>
+      <div class="meta">
+        <span>💼 <strong>Industry:</strong> Technology</span>
+        <span>📊 <strong>Level:</strong> Senior</span>
+      </div>
+      <pre><code id="code-1">{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
+    "version": "1.0.0",
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:se-001"
+  },
+  "basics": {
+    "name": {"given": "Alex", "family": "Chen"},
+    "headline": "Senior Full-Stack Engineer",
+    "summary": "Experienced software engineer specializing in scalable web applications and cloud infrastructure. Led teams of 5+ engineers and reduced deployment time by 60% through CI/CD automation.",
+    "contact": {
+      "email": "alex.chen@example.com",
+      "phone": "+1-555-0123",
+      "website": "https://alexchen.dev",
+      "social": [
+        {"platform": "GitHub", "url": "https://github.com/alexchen"},
+        {"platform": "LinkedIn", "url": "https://linkedin.com/in/alexchen"}
+      ]
+    },
+    "location": {"city": "San Francisco", "region": "California", "country": "US"}
+  },
+  "skills": [
+    {"name": "JavaScript", "level": "Expert", "years": 8},
+    {"name": "TypeScript", "level": "Expert", "years": 5},
+    {"name": "React", "level": "Expert", "years": 6},
+    {"name": "Node.js", "level": "Expert", "years": 7},
+    {"name": "AWS", "level": "Advanced", "years": 5},
+    {"name": "Docker", "level": "Advanced", "years": 4}
+  ],
+  "experience": [
+    {
+      "organization": {"name": "TechCorp Inc."},
+      "role": "Senior Software Engineer",
+      "start": "2021-03",
+      "current": true,
+      "location": {"city": "San Francisco", "country": "US"},
+      "highlights": [
+        "Led migration from monolith to microservices, improving system reliability to 99.9%",
+        "Architected real-time notification system handling 10M+ events daily",
+        "Mentored 3 junior engineers and conducted weekly code reviews"
+      ],
+      "technologies": ["TypeScript", "React", "Node.js", "AWS Lambda", "DynamoDB"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Stanford University",
+      "degree": "Bachelor of Science",
+      "field": "Computer Science",
+      "start": "2014-09",
+      "end": "2018-06",
+      "location": {"city": "Stanford", "country": "US"}
+    }
+  ]
+}</code><button class="copy-btn" onclick="copyCode('code-1', this)">Copy</button></pre>
+      <div class="actions">
+        <a href="/tools/validator.html" class="primary">Validate This</a>
+        <a href="/tools/converter.html" class="secondary">Convert Format</a>
+      </div>
+    </div>
+
+    <!-- Example 2: Healthcare -->
+    <div id="healthcare" class="example">
+      <h2>2. Healthcare Professional (Nurse)</h2>
+      <div class="meta">
+        <span>💼 <strong>Industry:</strong> Healthcare</span>
+        <span>📊 <strong>Level:</strong> Mid-Career</span>
+      </div>
+      <pre><code id="code-2">{
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "shortName": "APP",
+    "version": "1.0.0",
+    "uri": "https://app-protocol.org/spec/1.0",
+    "id": "urn:app-protocol:profile:nurse-001"
+  },
+  "basics": {
+    "name": {"given": "Maria", "family": "Rodriguez"},
+    "headline": "Registered Nurse - ICU Specialist",
+    "summary": "Compassionate RN with 7 years of critical care experience. Skilled in patient assessment, emergency response, and collaborating with multidisciplinary teams.",
+    "contact": {
+      "email": "maria.rodriguez@example.com",
+      "phone": "+1-555-0456"
+    },
+    "location": {"city": "Chicago", "region": "Illinois", "country": "US"}
+  },
+  "skills": [
+    {"name": "Critical Care Nursing", "level": "Expert", "years": 7},
+    {"name": "Patient Assessment", "level": "Expert", "years": 7},
+    {"name": "Emergency Response", "level": "Advanced", "years": 7},
+    {"name": "Ventilator Management", "level": "Advanced", "years": 5},
+    {"name": "ACLS", "level": "Advanced", "years": 7}
+  ],
+  "experience": [
+    {
+      "organization": {"name": "Chicago Medical Center"},
+      "role": "ICU Registered Nurse",
+      "start": "2019-01",
+      "current": true,
+      "location": {"city": "Chicago", "country": "US"},
+      "highlights": [
+        "Managed care for 4-6 critically ill patients per shift in 20-bed ICU",
+        "Trained 8 new nurses on ICU protocols and equipment",
+        "Recognized as Employee of the Quarter (Q2 2023)"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Illinois at Chicago",
+      "degree": "Bachelor of Science in Nursing",
+      "field": "Nursing",
+      "start": "2013-08",
+      "end": "2017-05"
+    }
+  ],
+  "certifications": [
+    {"name": "Registered Nurse (RN)", "issuer": "Illinois Board of Nursing", "date": "2017-06"},
+    {"name": "ACLS", "issuer": "American Heart Association", "date": "2023-08"},
+    {"name": "CCRN", "issuer": "AACN", "date": "2020-11"}
+  ]
+}</code><button class="copy-btn" onclick="copyCode('code-2', this)">Copy</button></pre>
+      <div class="actions">
+        <a href="/tools/validator.html" class="primary">Validate This</a>
+        <a href="/tools/converter.html" class="secondary">Convert Format</a>
+      </div>
+    </div>
+
+    <!-- Remaining examples abbreviated for brevity in HTML - Add "View More" button -->
+    <div style="text-align: center; margin: 3rem 0;">
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        📚 <strong>8 more examples available:</strong> Marketing Manager, Data Scientist, Mechanical Engineer, UX Designer, Financial Analyst, Sales Rep, Teacher, Recent Graduate
+      </p>
+      <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol/blob/main/docs/EXAMPLES.md" target="_blank" style="display: inline-block; background: var(--primary); color: white; padding: 1rem 2rem; border-radius: 0.5rem; text-decoration: none; font-weight: 500;">
+        View All Examples on GitHub →
+      </a>
+    </div>
+
+    <footer>
+      <p>
+        <a href="/" target="_blank">Home</a> · 
+        <a href="/spec/1.0" target="_blank">Spec</a> · 
+        <a href="/schema/app-1.0.json" target="_blank">Schema</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+
+  <script>
+    function copyCode(codeId, btn) {
+      const code = document.getElementById(codeId).textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

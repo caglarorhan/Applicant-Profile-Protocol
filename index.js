@@ -57,6 +57,10 @@ const server = createServer((req, res) => {
     serveFile(res, join(__dirname, 'examples', 'minimal.json'), 'application/json');
   } else if (pathname === '/docs' || pathname === '/docs/') {
     serveFile(res, join(__dirname, 'public', 'docs', 'index.html'), 'text/html');
+  } else if (pathname === '/docs/mappings' || pathname === '/docs/mappings/') {
+    serveFile(res, join(__dirname, 'public', 'docs', 'mappings', 'index.html'), 'text/html');
+  } else if (pathname === '/docs/semantic' || pathname === '/docs/semantic/') {
+    serveFile(res, join(__dirname, 'public', 'docs', 'semantic', 'index.html'), 'text/html');
   } else if (pathname === '/docs/semantic/json-ld') {
     serveFile(res, join(__dirname, 'public', 'docs', 'semantic', 'json-ld.html'), 'text/html');
   } else if (pathname === '/docs/mappings/json-resume') {
@@ -67,6 +71,8 @@ const server = createServer((req, res) => {
     serveFile(res, join(__dirname, 'public', 'docs', 'mappings', 'hr-xml.html'), 'text/html');
   } else if (pathname === '/docs/aep-template') {
     serveFile(res, join(__dirname, 'public', 'docs', 'aep-template.html'), 'text/html');
+  } else if (pathname === '/examples.html' || pathname === '/examples') {
+    serveFile(res, join(__dirname, 'public', 'examples.html'), 'text/html');
   } else if (pathname === '/tools/builder.html' || pathname === '/tools/builder') {
     serveFile(res, join(__dirname, 'public', 'tools', 'builder.html'), 'text/html');
   } else if (pathname === '/tools/validator.html' || pathname === '/tools/validator') {
@@ -102,7 +108,10 @@ const server = createServer((req, res) => {
           '/schema/app-1.0.json',
           '/examples/full.json',
           '/examples/minimal.json',
+          '/examples',
           '/docs',
+          '/docs/mappings',
+          '/docs/semantic',
           '/docs/semantic/json-ld',
           '/docs/mappings/json-resume',
           '/docs/mappings/europass',

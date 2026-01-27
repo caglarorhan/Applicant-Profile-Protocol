@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic Layer - Applicant Profile Protocol</title>
+  <meta name="description" content="Semantic web integration for APP using JSON-LD, Schema.org, and linked data vocabularies.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    
+    nav.breadcrumb {
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    nav.breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    
+    header {
+      text-align: center;
+      padding: 2rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    header .tagline { color: var(--text-muted); font-size: 1.1rem; }
+    
+    .intro {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+    .intro p { margin-bottom: 0.75rem; }
+    .intro ul { margin: 1rem 0 1rem 2rem; }
+    .intro li { margin-bottom: 0.5rem; }
+    
+    .resource-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--text);
+      display: block;
+    }
+    .resource-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+      transform: translateY(-2px);
+    }
+    .resource-card h2 {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .resource-card p {
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+    
+    .vocab-list {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .vocab-list h3 {
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .vocab-list ul {
+      margin-left: 2rem;
+    }
+    .vocab-list li {
+      margin-bottom: 0.75rem;
+    }
+    .vocab-list code {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 0.9em;
+      background: var(--bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.25rem;
+      color: var(--primary);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/docs">Docs</a> / <span>Semantic</span>
+    </nav>
+
+    <header>
+      <h1>Semantic Layer</h1>
+      <p class="tagline">Linked data and semantic web integration for APP</p>
+    </header>
+
+    <div class="intro">
+      <p><strong>The semantic layer</strong> extends APP with JSON-LD support, enabling integration with the semantic web and linked data ecosystems.</p>
+      <p>By adding a <code>@context</code> to your APP profile, you can:</p>
+      <ul>
+        <li>Link to standardized vocabularies (Schema.org, FOAF, etc.)</li>
+        <li>Enable machine-readable semantic relationships</li>
+        <li>Integrate with knowledge graphs and RDF systems</li>
+        <li>Improve discoverability and interoperability</li>
+      </ul>
+    </div>
+
+    <a href="/docs/semantic/json-ld.html" class="resource-card">
+      <h2>
+        <span style="font-size: 2rem;">🔗</span>
+        JSON-LD Integration
+      </h2>
+      <p>Complete guide to adding semantic web capabilities to APP profiles using JSON-LD and Schema.org vocabularies.</p>
+    </a>
+
+    <div class="vocab-list">
+      <h3>📚 Referenced Vocabularies</h3>
+      <ul>
+        <li><strong>Schema.org</strong> - <code>Person</code>, <code>JobPosting</code>, <code>EducationalOccupationalCredential</code></li>
+        <li><strong>FOAF</strong> - <code>Person</code>, <code>name</code>, <code>mbox</code></li>
+        <li><strong>Dublin Core</strong> - <code>creator</code>, <code>date</code>, <code>identifier</code></li>
+        <li><strong>ESCO</strong> - European Skills, Competences, Qualifications and Occupations</li>
+      </ul>
+    </div>
+
+    <footer>
+      <p>
+        <a href="/">Home</a> · 
+        <a href="/docs">Docs</a> · 
+        <a href="/spec/1.0">Spec</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+</body>
+</html>

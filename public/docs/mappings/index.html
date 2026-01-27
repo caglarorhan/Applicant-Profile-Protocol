@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Format Mappings - Applicant Profile Protocol</title>
+  <meta name="description" content="Mappings between APP and other resume/CV formats: JSON Resume, Europass XML, and HR-XML.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+    
+    nav.breadcrumb {
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    nav.breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    
+    header {
+      text-align: center;
+      padding: 2rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    header .tagline { color: var(--text-muted); font-size: 1.1rem; }
+    
+    .intro {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+    .intro p { margin-bottom: 0.75rem; }
+    
+    .mappings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .mapping-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--text);
+      display: block;
+    }
+    .mapping-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+      transform: translateY(-2px);
+    }
+    .mapping-card h2 {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+    }
+    .mapping-card .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .mapping-card p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .mapping-card .meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .mapping-card .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .tools-section {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    .tools-section h2 { margin-bottom: 1rem; color: white; }
+    .tools-section p { margin-bottom: 1.5rem; opacity: 0.95; }
+    .tools-section .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .tools-section a {
+      display: inline-block;
+      background: white;
+      color: var(--primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+    .tools-section a:hover {
+      transform: translateY(-2px);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/docs">Docs</a> / <span>Mappings</span>
+    </nav>
+
+    <header>
+      <h1>Format Mappings</h1>
+      <p class="tagline">Bidirectional mappings between APP and other resume/CV formats</p>
+    </header>
+
+    <div class="intro">
+      <p><strong>Applicant Profile Protocol (APP)</strong> is designed to be interoperable with existing resume and CV formats. These mapping guides show how to convert data between APP and other popular standards.</p>
+      <p>Each mapping includes field-by-field conversion rules, examples, and notes on data transformations or limitations.</p>
+    </div>
+
+    <div class="mappings-grid">
+      <a href="/docs/mappings/json-resume.html" class="mapping-card">
+        <div class="icon">📋</div>
+        <h2>JSON Resume</h2>
+        <p>Community-driven open-source standard for resume data in JSON format.</p>
+        <div class="meta">
+          <span>🔄 Bidirectional</span>
+          <span>✅ High compatibility</span>
+        </div>
+      </a>
+
+      <a href="/docs/mappings/europass.html" class="mapping-card">
+        <div class="icon">🇪🇺</div>
+        <h2>Europass XML</h2>
+        <p>European Commission standard for CVs, widely used across EU countries.</p>
+        <div class="meta">
+          <span>🔄 Bidirectional</span>
+          <span>📄 XML format</span>
+        </div>
+      </a>
+
+      <a href="/docs/mappings/hr-xml.html" class="mapping-card">
+        <div class="icon">🏢</div>
+        <h2>HR-XML</h2>
+        <p>Enterprise HR data exchange standard used by ATS and HRIS systems.</p>
+        <div class="meta">
+          <span>🔄 Bidirectional</span>
+          <span>🏢 Enterprise</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="tools-section">
+      <h2>🛠️ Try the Converter Tool</h2>
+      <p>Convert your APP profiles to any of these formats instantly with our online tool</p>
+      <div class="buttons">
+        <a href="/tools/converter.html">Open Converter</a>
+        <a href="/tools/importer.html">Import from Other Formats</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        <a href="/">Home</a> · 
+        <a href="/docs">Docs</a> · 
+        <a href="/spec/1.0">Spec</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© 2026 Applicant Profile Protocol. Open Source.</p>
+    </footer>
+  </div>
+</body>
+</html>
