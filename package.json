@@ -38,7 +38,10 @@
     "export:jsonresume": "node src/exporters/jsonresume.js examples/full.json > dist/full.jsonresume.json",
     "export:europass": "node src/exporters/europass.js examples/full.json > dist/full.europass.xml",
     "export:hrxml": "node src/exporters/hrxml.js examples/full.json > dist/full.hrxml.xml",
-    "export:jsonld": "node src/exporters/jsonld.js examples/full.json > dist/full.jsonld.json"
+    "export:jsonld": "node src/exporters/jsonld.js examples/full.json > dist/full.jsonld.json",
+    "version:sync": "node scripts/sync-version.js",
+    "preversion": "npm run version:sync",
+    "postversion": "git push && git push --tags"
   },
   "bin": {
     "app": "src/cli.js"

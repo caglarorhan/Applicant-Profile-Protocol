@@ -1,7 +1,7 @@
 # Applicant Profile Protocol (APP)
 
-Version: 1.0.0 (Draft)
-Status: Draft
+Version: 1.0.1
+Status: Active
 Authors: Community-driven
 
 ---

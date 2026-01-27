@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { APP_VERSION } from './src/version.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -80,7 +81,7 @@ const server = createServer((req, res) => {
     res.end();
   } else if (pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', protocol: 'APP', version: '1.0.0' }));
+    res.end(JSON.stringify({ status: 'ok', protocol: 'APP', version: APP_VERSION }));
   } else {
     // Try to serve static files from public folder first, then root
     let filePath = join(__dirname, 'public', pathname);
@@ -119,7 +120,7 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Applicant Profile Protocol (APP) v1.0.0`);
+  console.log(`Applicant Profile Protocol (APP) v${APP_VERSION}`);
   console.log(`https://app-protocol.org`);
   console.log(`Server running on port ${PORT}`);
 });

@@ -90,6 +90,40 @@ Changes to `schema/app.schema.json` require:
 3. Ensure backward compatibility when possible
 4. Bump version appropriately
 
+## Version Management
+
+**The version is defined in ONE place:** `package.json`
+
+All other files are automatically synced using:
+
+```bash
+npm run version:sync
+```
+
+This updates:
+- `src/version.js` (imported by code)
+- `SPEC.md` header
+- `public/index.html` version badge
+
+### To Release a New Version
+
+```bash
+# Bump version and auto-sync all files
+npm version patch   # 1.0.1 → 1.0.2
+npm version minor   # 1.0.1 → 1.1.0
+npm version major   # 1.0.1 → 2.0.0
+
+# The postversion script will automatically:
+# 1. Run version:sync
+# 2. Create git tag
+# 3. Push commits and tags
+
+# Then publish
+npm publish
+```
+
+**Note:** Example JSON files (`examples/*.json`) use protocol version `1.0.0`, which is the data format version, not the package version. This is intentional and should NOT be changed unless the protocol itself changes.
+
 ## Questions?
 
 - Open a [Discussion](https://github.com/caglarorhan/Applicant-Profile-Protocol/discussions) for questions
