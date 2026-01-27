@@ -88,14 +88,19 @@ app export:jsonld your-profile.json > profile.jsonld
 
 ## Contents
 
-This repository contains the draft specification, JSON Schema, and examples for the Applicant Profile Protocol (APP).
+This repository contains the specification, JSON Schema, validation tools, and examples for the Applicant Profile Protocol (APP).
 
-## Contents
+### Core Files
+- `SPEC.md`: Full protocol specification
+- `schema/app.schema.json`: JSON Schema (v1.0) for validating APP profiles
+- `CHANGELOG.md`: Version history and release notes
 
-- `SPEC.md`: Full protocol specification (draft)
-- `schema/app.schema.json`: JSON Schema (v1) for validating APP profiles
+### Examples
 - `examples/minimal.json`: Minimal valid APP profile
 - `examples/full.json`: Full featured example with semantic and evidence layers
+- **[docs/EXAMPLES.md](docs/EXAMPLES.md)**: 10 detailed real-world examples across industries (Software Engineer, Nurse, Marketing Manager, Data Scientist, Mechanical Engineer, UX Designer, Financial Analyst, Sales Rep, Teacher, Recent Graduate)
+
+### Documentation
 - `docs/mappings/`: Export mapping guides for JSON Resume, Europass, HR-XML
 - `docs/semantic/json-ld.md`: Guidance for the optional JSON-LD semantic layer
 - `src/`: Validator and exporters (Node.js)

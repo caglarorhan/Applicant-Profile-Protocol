@@ -147,6 +147,114 @@ Only the Core Layer is required for protocol compliance.
 
 The JSON Schema for APP v1 is provided in `schema/app.schema.json`.
 
+---
+
+## 5.1.1 Field Reference Tables
+
+### Protocol Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | ✅ | Protocol name: "ApplicantProfileProtocol" |
+| `shortName` | string | ❌ | Short name: "APP" |
+| `version` | string | ✅ | Semantic version (e.g., "1.0.0") |
+| `uri` | string | ✅ | Specification URI |
+| `id` | string | ❌ | Unique profile identifier (URN or UUID) |
+
+### Basics Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name.given` | string | ✅ | Given name (first name) |
+| `name.family` | string | ✅ | Family name (last name) |
+| `name.middle` | string | ❌ | Middle name(s) |
+| `headline` | string | ❌ | Professional headline (max 100 chars) |
+| `summary` | string | ❌ | Professional summary (max 2000 chars) |
+| `contact.email` | string | ❌ | Email address |
+| `contact.phone` | string | ❌ | Phone number |
+| `contact.website` | string | ❌ | Personal website URL |
+| `contact.social` | array | ❌ | Social media profiles |
+| `location.country` | string | ❌ | ISO 3166-1 alpha-2 country code |
+| `location.region` | string | ❌ | State/province/region |
+| `location.city` | string | ❌ | City name |
+| `location.remote` | boolean | ❌ | Open to remote work |
+
+### Skills Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | ✅ | Skill name |
+| `level` | string | ❌ | Proficiency: "Beginner", "Intermediate", "Advanced", "Expert" |
+| `years` | number | ❌ | Years of experience |
+| `lastUsed` | string | ❌ | Last used date (YYYY-MM) |
+| `confidence` | number | ❌ | Self-reported confidence (0.0-1.0) |
+| `category` | string | ❌ | Skill category (e.g., "Programming", "Design") |
+
+### Experience Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `role` | string | ✅ | Job title/role |
+| `organization.name` | string | ✅ | Company/organization name |
+| `organization.industry` | string | ❌ | Industry sector |
+| `start` | string | ✅ | Start date (YYYY-MM) |
+| `end` | string | ❌ | End date (YYYY-MM); omit if current |
+| `current` | boolean | ❌ | Currently employed (true/false) |
+| `location.city` | string | ❌ | City |
+| `location.country` | string | ❌ | ISO country code |
+| `employmentType` | string | ❌ | "Full-time", "Part-time", "Contract", "Freelance" |
+| `highlights` | array | ❌ | Key achievements/responsibilities |
+| `technologies` | array | ❌ | Tools/technologies used |
+| `metrics` | object | ❌ | Quantifiable data (teamSize, budget, etc.) |
+
+### Education Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `institution` | string | ✅ | School/university name |
+| `degree` | string | ❌ | Degree type (e.g., "Bachelor of Science") |
+| `field` | string | ❌ | Field of study |
+| `start` | string | ❌ | Start date (YYYY-MM) |
+| `end` | string | ❌ | End date (YYYY-MM) |
+| `gpa` | number | ❌ | GPA (e.g., 3.8) |
+| `location.city` | string | ❌ | City |
+| `location.country` | string | ❌ | ISO country code |
+| `honors` | array | ❌ | Honors, awards, distinctions |
+
+### Certifications Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | ✅ | Certification name |
+| `issuer` | string | ✅ | Issuing organization |
+| `date` | string | ❌ | Date obtained (YYYY-MM) |
+| `expires` | string | ❌ | Expiration date (YYYY-MM) |
+| `url` | string | ❌ | Verification URL |
+| `credentialId` | string | ❌ | Certificate/license number |
+
+### Projects Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | ✅ | Project name |
+| `description` | string | ❌ | Brief description (max 500 chars) |
+| `url` | string | ❌ | Project URL (GitHub, demo site) |
+| `start` | string | ❌ | Start date (YYYY-MM) |
+| `end` | string | ❌ | End date (YYYY-MM) |
+| `role` | string | ❌ | Your role in the project |
+| `technologies` | array | ❌ | Technologies used |
+| `highlights` | array | ❌ | Key accomplishments |
+
+### Languages Array
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `language` | string | ✅ | Language name |
+| `proficiency` | string | ❌ | "Native", "Fluent", "Professional", "Conversational", "Basic" |
+| `certifications` | array | ❌ | Language certifications (e.g., TOEFL) |
+
+---
+
 ### 5.2 `basics`
 
 ```json
