@@ -1,5 +1,21 @@
 # APP → Europass XML Mapping
 
+**Protocol Version:** 1.0  
+**Last Updated:** January 2026  
+**Status:** Active
+
+This guide describes how to export an Applicant Profile Protocol (APP) profile to Europass XML format.
+
+## Overview
+
+Europass is the European Union's standard for CVs and credentials. APP can export to Europass XML while maintaining compatibility with EU systems. Some APP-specific features (confidence scores, semantic layer) are not part of the Europass standard and will be omitted.
+
+## References
+- Europass official: https://europa.eu/europass/
+- APP Export Tool: https://app-protocol.org/tools/converter.html
+
+---
+
 This guide outlines how to export APP profiles into Europass CV XML.
 
 References:

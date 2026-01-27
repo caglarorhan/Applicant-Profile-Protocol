@@ -1,6 +1,26 @@
 # APP Enhancement Proposal (AEP) Template
 
+**Version:** 1.0  
+**Last Updated:** January 2026
+
 Use this template to propose changes or extensions to the Applicant Profile Protocol.
+
+## About AEPs
+
+APP Enhancement Proposals (AEPs) are the formal way to suggest improvements to the Applicant Profile Protocol. They ensure community input, technical review, and backward compatibility considerations.
+
+**When to submit an AEP:**
+- Adding new fields to the schema
+- Changing validation rules
+- Proposing new export formats
+- Extending the protocol architecture
+
+**How to submit:**
+1. Copy this template
+2. Fill in all sections
+3. Submit as GitHub issue with label `spec`
+4. Community discussion and review
+5. If accepted, assign AEP number and merge
 
 ## AEP Number
 AEP-XXXX (assigned upon acceptance)

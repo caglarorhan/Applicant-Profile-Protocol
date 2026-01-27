@@ -1,9 +1,19 @@
 # APP → JSON Resume Mapping
 
-This guide describes how to export an APP profile to the JSON Resume schema.
+**Protocol Version:** 1.0  
+**Last Updated:** January 2026  
+**Status:** Active
 
-References:
+This guide describes how to export an Applicant Profile Protocol (APP) profile to the JSON Resume schema format.
+
+## Overview
+
+JSON Resume is a popular, developer-friendly resume format. APP can export to JSON Resume while preserving most core information. Some APP-specific features (confidence scores, evidence layer) are not supported by JSON Resume and will be omitted during export.
+
+## References
 - JSON Resume schema: https://jsonresume.org/schema/
+- JSON Resume official site: https://jsonresume.org
+- APP Export Tool: https://app-protocol.org/tools/converter.html
 
 ## Field Mapping
 

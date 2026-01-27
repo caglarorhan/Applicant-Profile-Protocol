@@ -1,6 +1,14 @@
 # Semantic Layer (JSON-LD)
 
+**Protocol Version:** 1.0  
+**Last Updated:** January 2026  
+**Status:** Active
+
 This document describes how to attach an optional JSON-LD semantic layer to an APP profile for interoperability with linked data ecosystems (Schema.org, ESCO, O*NET).
+
+## Overview
+
+The semantic layer enables APP profiles to be consumed by linked data systems, search engines, and AI platforms. It uses standard vocabularies like Schema.org while keeping APP as the canonical source of truth.
 
 ## Purpose
 - Enable search/AI systems to consume applicant profiles as linked data.

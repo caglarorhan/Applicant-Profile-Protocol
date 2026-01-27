@@ -1,5 +1,21 @@
 # APP → HR-XML Mapping
 
+**Protocol Version:** 1.0  
+**Last Updated:** January 2026  
+**Status:** Active
+
+This guide describes how to export an Applicant Profile Protocol (APP) profile to HR-XML format.
+
+## Overview
+
+HR-XML is an enterprise-grade XML standard for human resources data exchange. APP can export to HR-XML for integration with enterprise ATS and HCM systems. Some APP-specific features (confidence scores, evidence layer) may need to be mapped to HR-XML extension fields.
+
+## References
+- HR-XML Consortium: https://www.hr-xml.org/
+- APP Export Tool: https://app-protocol.org/tools/converter.html
+
+---
+
 This guide outlines how to export APP profiles into a simplified HR-XML Resume.
 
 References:
