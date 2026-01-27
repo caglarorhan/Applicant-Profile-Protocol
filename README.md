@@ -10,6 +10,38 @@ An open, JSON-based protocol for representing job applicant profiles in a struct
 
 🌐 **Website:** [app-protocol.org](https://app-protocol.org) | 📦 **npm:** [applicant-profile-protocol](https://www.npmjs.com/package/applicant-profile-protocol)
 
+---
+
+## 🤔 Why APP Exists
+
+There are many competing applicant profile formats — **JSON Resume**, **Europass**, **HR-XML**, and countless proprietary ATS schemas. Each has limitations:
+
+- **JSON Resume** — Developer-friendly but limited scope. No confidence metrics or verification.
+- **Europass** — EU-focused, not globally adopted. Tied to government infrastructure.
+- **HR-XML** — Enterprise-grade but heavyweight XML. Complex to implement.
+- **ATS Vendors** — Proprietary, fragmented. No interoperability between systems.
+
+**APP unifies these** into a single JSON protocol that is:
+- ✅ **Interoperable** — Export to all major formats
+- ✅ **Machine-readable** — JSON Schema validation, AI-ready
+- ✅ **Extensible** — Layered architecture (core + enrichment + evidence)
+- ✅ **Open** — Community-governed, Apache 2.0 license
+
+---
+
+## 👥 Who Should Use This?
+
+| Use Case | APP Helps You... |
+|----------|------------------|
+| **HR Tech Companies** | Build interoperable applicant systems |
+| **ATS/CRM Developers** | Import/export profiles across platforms |
+| **Job Boards** | Standardize applicant data formats |
+| **AI/ML Engineers** | Access structured data with confidence scores |
+| **Career Platforms** | Give users portable, verifiable profiles |
+| **Individual Developers** | Create validated, schema-compliant resumes |
+
+---
+
 ## Installation
 
 ### From npm (recommended)

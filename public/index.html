@@ -280,6 +280,91 @@
     </section>
 
     <section class="example-section" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 2rem; margin: 3rem 0;">
+      <h2 style="margin-bottom: 1.5rem;">Standards Comparison</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center;">
+        See how APP compares to existing applicant profile standards
+      </p>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+          <thead>
+            <tr style="background: var(--bg); border-bottom: 2px solid var(--border);">
+              <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Feature</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600;">JSON Resume</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600;">Europass</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600;">HR-XML</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600; color: var(--primary);">APP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">JSON-First</td>
+              <td style="padding: 0.75rem; text-align: center;">✅</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">Schema Validation</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center;">Partial</td>
+              <td style="padding: 0.75rem; text-align: center;">Strict</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">Strict</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">Extensible</td>
+              <td style="padding: 0.75rem; text-align: center;">Medium</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">High</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">AI/ML Ready</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">Confidence Scores</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">Evidence Layer</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">JSON-LD / Semantic</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center;">❌</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem; font-weight: 500;">Export to Other Formats</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center;">Limited</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅ All</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.75rem; font-weight: 500;">Open Source</td>
+              <td style="padding: 0.75rem; text-align: center;">✅</td>
+              <td style="padding: 0.75rem; text-align: center;">Partial</td>
+              <td style="padding: 0.75rem; text-align: center;">✅</td>
+              <td style="padding: 0.75rem; text-align: center; background: var(--bg);">✅</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="example-section" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 2rem; margin: 3rem 0;">
       <h2 style="margin-bottom: 1.5rem;">The Problem with Existing Standards</h2>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
         <div>
@@ -350,6 +435,7 @@ app export:europass profile.json > europass.xml</code></pre>
         <a href="/spec/1.0" target="_blank">Spec</a> · 
         <a href="/schema/app-1.0.json" target="_blank">Schema</a> · 
         <a href="/docs" target="_blank">Docs</a> · 
+        <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol/blob/main/CHANGELOG.md" target="_blank">Changelog</a> · 
         <a href="https://github.com/caglarorhan/Applicant-Profile-Protocol" target="_blank">GitHub</a> · 
         <a href="/health" target="_blank">Status</a>
       </p>
