@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/applicant-profile-protocol.svg)](https://www.npmjs.com/package/applicant-profile-protocol)
 [![npm downloads](https://img.shields.io/npm/dm/applicant-profile-protocol.svg)](https://www.npmjs.com/package/applicant-profile-protocol)
 [![GitHub Package](https://img.shields.io/badge/GitHub%20Packages-@caglarorhan/applicant--profile--protocol-blue?logo=github)](https://github.com/caglarorhan/Applicant-Profile-Protocol/packages)
-[![License](https://img.shields.io/npm/l/applicant-profile-protocol.svg)](https://github.com/caglarorhan/Applicant-Profile-Protocol/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/caglarorhan/Applicant-Profile-Protocol.svg)](https://github.com/caglarorhan/Applicant-Profile-Protocol/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/caglarorhan/Applicant-Profile-Protocol.svg)](https://github.com/caglarorhan/Applicant-Profile-Protocol/stargazers)
 
 An open, JSON-based protocol for representing job applicant profiles in a structured, interoperable, and extensible manner.
