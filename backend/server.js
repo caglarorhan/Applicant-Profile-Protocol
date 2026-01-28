@@ -52,7 +52,18 @@ app.use('/api/health', healthRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/profiles', profileRoutes);
 
-// Serve static files (frontend)
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'APP PDF Extractor API',
+    version: '1.0.0',
+    status: 'running',
+    documentation: '/api',
+    health: '/api/health'
+  });
+});
+
+// Serve static files (frontend) - only if public directory exists
 app.use(express.static(join(__dirname, '../public')));
 
 // API documentation
@@ -70,6 +81,19 @@ app.get('/api', (req, res) => {
       deleteProfile: 'DELETE /api/profiles/:id'
     },
     documentation: 'https://app-protocol.org/docs/pdf-extractor'
+  });
+});
+
+// 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.url} not found`,
+    availableEndpoints: {
+      root: 'GET /',
+      api: 'GET /api',
+      health: 'GET /api/health'
+    }
   });
 });
 
