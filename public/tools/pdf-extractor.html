@@ -782,16 +782,20 @@
           const formData = new FormData();
           formData.append('pdf', file);
           
+          console.log('📤 Uploading PDF to backend...');
           const response = await fetch('/api/pdf/extract', {
             method: 'POST',
             body: formData
           });
           
           if (!response.ok) {
-            throw new Error('Failed to process PDF');
+            const errorText = await response.text();
+            console.error('❌ Server error:', errorText);
+            throw new Error('Failed to process PDF: ' + response.statusText);
           }
           
           const data = await response.json();
+          console.log('📦 Received response:', data);
           
           if (!data.success) {
             throw new Error(data.error || 'Processing failed');
@@ -799,6 +803,14 @@
           
           updateProcessingStep('statusExtraction', 'completed', `${data.metadata.textLength} characters`);
           updateStep('stepExtract', 'completed');
+          
+          // Store extracted text for display
+          extractedText = data.extractedText || '';
+          console.log('📝 Extracted text length:', extractedText.length);
+          
+          // Store raw AI extracted data
+          extractedData = data.aiExtractedData || {};
+          console.log('🤖 AI extracted data:', extractedData);
           
           // Step 2: OCR (handled by backend)
           updateProcessingStep('statusOCR', 'completed', 'Completed by backend');
@@ -815,6 +827,7 @@
           updateStep('stepMap', 'processing');
           updateProcessingStep('statusMapping', 'completed', 'Mapped to APP format');
           appProfile = data.profile;
+          console.log('👤 Profile:', appProfile);
           updateStep('stepMap', 'completed');
           
           // Step 6: Validation
@@ -827,6 +840,10 @@
             updateProcessingStep('statusValidation', 'completed', `⚠ ${validation.errors?.length || 0} warnings`);
           }
           updateStep('stepValidate', 'completed');
+          
+          // Calculate confidence scores
+          confidenceScores = calculateConfidence(appProfile, extractedData);
+          console.log('📊 Confidence scores:', confidenceScores);
           
           // Show results
           displayResults();
@@ -1115,7 +1132,7 @@
       resultsPanel.classList.remove('hidden');
       
       // Confidence score
-      const score = confidenceScores.overall;
+      const score = confidenceScores.overall || 0;
       document.getElementById('confidenceScore').textContent = score + '%';
       const fill = document.getElementById('confidenceFill');
       fill.style.width = score + '%';
@@ -1133,25 +1150,12 @@
       document.getElementById('appOutput').textContent = JSON.stringify(appProfile, null, 2);
       
       // Raw text
-      document.getElementById('textOutput').textContent = extractedText;
+      document.getElementById('textOutput').textContent = extractedText || 'No text extracted';
       
-      // Entities list
+      // Display AI extracted data as formatted JSON (not as entity list)
       const entityList = document.getElementById('entityList');
-      entityList.innerHTML = '';
-      if (extractedData && extractedData.entities) {
-        extractedData.entities.forEach(entity => {
-          const item = document.createElement('div');
-          item.className = 'entity-item';
-          item.innerHTML = `
-            <div class="entity-value">
-              <span class="entity-type">${entity.type}</span>
-              ${entity.value}
-            </div>
-            <div class="entity-confidence">${Math.round(entity.confidence * 100)}%</div>
-          `;
-          entityList.appendChild(item);
-        });
-      }
+      entityList.innerHTML = '<pre style="margin: 0; padding: 1rem; background: #f5f5f5; border-radius: 8px; overflow-x: auto;">' + 
+        JSON.stringify(extractedData, null, 2) + '</pre>';
       
       updateStep('stepSave', 'active');
     }
