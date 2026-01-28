@@ -34,6 +34,64 @@ const upload = multer({
 router.post('/upload', authenticateUser, upload.single('pdf'), uploadPDF);
 
 /**
+ * POST /api/pdf/extract
+ * Extract data from PDF (public endpoint, no auth required)
+ * Returns APP JSON directly
+ */
+router.post('/extract', upload.single('pdf'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No PDF file provided'
+      });
+    }
+
+    // Import processing functions
+    const pdfParse = (await import('pdf-parse')).default;
+    const { extractWithAI } = await import('../config/openai.config.js');
+    const { mapToAPP, validateAPP } = await import('../services/app-mapper.service.js');
+
+    // Extract text from PDF
+    const pdfData = await pdfParse(req.file.buffer);
+    const text = pdfData.text;
+
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No text found in PDF'
+      });
+    }
+
+    // Extract structured data with AI
+    const extractedData = await extractWithAI(text);
+    
+    // Map to APP format
+    const appProfile = mapToAPP(extractedData);
+    
+    // Validate
+    const validation = validateAPP(appProfile);
+
+    res.json({
+      success: true,
+      profile: appProfile,
+      validation: validation,
+      metadata: {
+        pages: pdfData.numpages,
+        textLength: text.length
+      }
+    });
+
+  } catch (error) {
+    console.error('PDF extraction error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to process PDF'
+    });
+  }
+});
+
+/**
  * POST /api/pdf/process
  * Process already uploaded PDF
  * Requires authentication
