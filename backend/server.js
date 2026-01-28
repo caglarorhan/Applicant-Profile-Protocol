@@ -10,6 +10,12 @@ import { dirname, join } from 'path';
 // Load environment variables
 dotenv.config();
 
+console.log('🔧 Starting APP PDF Extractor Backend...');
+console.log('📝 Environment:', process.env.NODE_ENV || 'development');
+console.log('🔌 Port:', process.env.PORT || 3000);
+console.log('🔑 OpenAI configured:', !!process.env.OPENAI_API_KEY);
+console.log('🔥 Firebase configured:', !!process.env.FIREBASE_PROJECT_ID);
+
 // Import routes
 import pdfRoutes from './routes/pdf.routes.js';
 import profileRoutes from './routes/profile.routes.js';
