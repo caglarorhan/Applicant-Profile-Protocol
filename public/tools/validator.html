@@ -269,7 +269,14 @@
         delete schema.$schema;
         
         ajv = new ajv2020({ allErrors: true, strict: false });
-        ajvFormats(ajv);
+        
+        // Add formats support - ajv-formats is exposed as window.ajvFormats or addFormats
+        if (typeof addFormats !== 'undefined') {
+          addFormats(ajv);
+        } else if (typeof window.ajvFormats !== 'undefined') {
+          window.ajvFormats(ajv);
+        }
+        
         validateFn = ajv.compile(schema);
         console.log('✅ Schema loaded successfully');
       } catch(e) {
