@@ -64,10 +64,17 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
     }
 
     // Extract structured data with AI
-    const extractedData = await extractWithAI(text);
+    const aiResult = await extractWithAI(text);
+    
+    if (!aiResult.success) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to extract data with AI: ' + (aiResult.error || 'Unknown error')
+      });
+    }
     
     // Map to APP format
-    const appProfile = mapToAPP(extractedData);
+    const appProfile = mapToAPP(aiResult.data);
     
     // Validate
     const validation = validateAPP(appProfile);
