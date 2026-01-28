@@ -58,20 +58,6 @@ app.use('/api/health', healthRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/profiles', profileRoutes);
 
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    name: 'APP PDF Extractor API',
-    version: '1.0.0',
-    status: 'running',
-    documentation: '/api',
-    health: '/api/health'
-  });
-});
-
-// Serve static files (frontend) - only if public directory exists
-app.use(express.static(join(__dirname, '../public')));
-
 // API documentation
 app.get('/api', (req, res) => {
   res.json({
@@ -90,13 +76,24 @@ app.get('/api', (req, res) => {
   });
 });
 
-// 404 handler for undefined routes
-app.use((req, res) => {
+// Serve static files (frontend HTML/CSS/JS)
+app.use(express.static(join(__dirname, '../public')));
+
+// Fallback to index.html for client-side routing
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.url.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(join(__dirname, '../public/index.html'));
+});
+
+// 404 handler for API routes only
+app.use('/api/*', (req, res) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.method} ${req.url} not found`,
     availableEndpoints: {
-      root: 'GET /',
       api: 'GET /api',
       health: 'GET /api/health'
     }
