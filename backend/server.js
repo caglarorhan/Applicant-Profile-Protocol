@@ -102,6 +102,12 @@ app.use(express.static(join(__dirname, '../public')));
 // Serve schema files
 app.use('/schema', express.static(join(__dirname, '../schema')));
 
+// Schema version aliases
+app.get('/schema/app-:version.json', (req, res) => {
+  // Map versioned requests to actual schema file
+  res.sendFile(join(__dirname, '../schema/app.schema.json'));
+});
+
 // Fallback to index.html for client-side routing
 app.get('*', (req, res, next) => {
   // Skip API routes
