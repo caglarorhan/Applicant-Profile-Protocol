@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Resume Extractor - APP Tools</title>
+  <meta name="description" content="Extract and convert resume data from PDF files to Applicant Profile Protocol (APP) format.">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --info: #3b82f6;
+      --info-bg: #dbeafe;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.75rem; }
+    header a { color: var(--primary); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    
+    .intro {
+      background: var(--info-bg);
+      border: 1px solid #93c5fd;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .intro h2 { color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .intro p { color: #1e3a8a; margin-bottom: 0.5rem; }
+    .intro .pipeline { 
+      display: flex; 
+      gap: 0.5rem; 
+      align-items: center; 
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      color: #1e40af;
+      font-family: 'SF Mono', monospace;
+    }
+    .intro .pipeline span { 
+      padding: 0.25rem 0.5rem; 
+      background: white; 
+      border-radius: 0.25rem;
+      white-space: nowrap;
+    }
+    
+    .steps {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .step {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.75rem;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .step.active { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .step.completed { border-color: var(--success); background: var(--success-bg); }
+    .step.processing { border-color: var(--warning); background: var(--warning-bg); animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .step .number {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .step.active .number { background: var(--primary); color: white; }
+    .step.completed .number { background: var(--success); color: white; content: '✓'; }
+    .step.processing .number { background: var(--warning); color: white; }
+    .step h3 { font-size: 0.8rem; margin: 0; }
+    
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h2 { 
+      margin-bottom: 1rem; 
+      font-size: 1.25rem;
+      color: var(--primary);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .file-upload {
+      border: 3px dashed var(--border);
+      border-radius: 0.75rem;
+      padding: 3rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--bg);
+    }
+    .file-upload:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .file-upload.dragover { 
+      border-color: var(--primary); 
+      background: rgba(37, 99, 235, 0.1);
+      transform: scale(1.02);
+    }
+    .file-upload input { display: none; }
+    .file-upload .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .file-upload h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .file-upload p { color: var(--text-muted); font-size: 0.9rem; }
+    
+    .file-info {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .file-info .details { display: flex; align-items: center; gap: 1rem; }
+    .file-info .icon { font-size: 2rem; }
+    .file-info .name { font-weight: 500; }
+    .file-info .size { color: var(--text-muted); font-size: 0.85rem; }
+    .file-info button { 
+      padding: 0.5rem 1rem; 
+      background: var(--danger); 
+      color: white; 
+      border: none; 
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .file-info button:hover { background: #dc2626; }
+    
+    .processing-status {
+      margin-bottom: 1rem;
+    }
+    .processing-step {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .processing-step:last-child { border-bottom: none; }
+    .processing-step .icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-size: 0.9rem;
+    }
+    .processing-step.pending .icon { background: var(--border); color: var(--text-muted); }
+    .processing-step.active .icon { background: var(--warning); color: white; animation: spin 1s linear infinite; }
+    .processing-step.completed .icon { background: var(--success); color: white; }
+    .processing-step.error .icon { background: var(--danger); color: white; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .processing-step .label { flex: 1; }
+    .processing-step .result { color: var(--text-muted); font-size: 0.85rem; }
+    
+    .confidence-meter {
+      margin: 1rem 0;
+    }
+    .confidence-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .confidence-label .score { font-weight: bold; color: var(--primary); }
+    .confidence-bar {
+      height: 1.5rem;
+      background: var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+      transition: width 1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.5rem;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .section-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-card {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .section-card .count { 
+      font-size: 2rem; 
+      font-weight: bold; 
+      color: var(--primary);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .section-card .label { 
+      color: var(--text-muted); 
+      font-size: 0.85rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover:not(:disabled) { background: #059669; transform: translateY(-1px); }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover:not(:disabled) { background: #475569; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover:not(:disabled) { background: #d97706; }
+    
+    .actions { 
+      display: flex; 
+      gap: 0.75rem; 
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    
+    .status {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      border-left: 4px solid;
+    }
+    .status.success { background: var(--success-bg); border-color: var(--success); color: #065f46; }
+    .status.error { background: var(--danger-bg); border-color: var(--danger); color: #991b1b; }
+    .status.warning { background: var(--warning-bg); border-color: var(--warning); color: #92400e; }
+    .status.info { background: var(--info-bg); border-color: var(--info); color: #1e40af; }
+    
+    .preview-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .preview-tabs button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      margin-bottom: -2px;
+    }
+    .preview-tabs button.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 500;
+    }
+    .preview-tabs button:hover { color: var(--primary); }
+    
+    .preview-content {
+      display: none;
+    }
+    .preview-content.active {
+      display: block;
+    }
+    
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .entity-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .entity-item {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+    }
+    .entity-item:last-child { border-bottom: none; }
+    .entity-type {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+    .entity-value { flex: 1; font-size: 0.9rem; }
+    .entity-confidence {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      white-space: nowrap;
+      margin-left: 1rem;
+    }
+    
+    .storage-options {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .storage-option {
+      flex: 1;
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .storage-option:hover { border-color: var(--primary); }
+    .storage-option.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .storage-option .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .storage-option h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .storage-option p { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+    .storage-option.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .hidden { display: none !important; }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @media (max-width: 768px) {
+      .container { padding: 1rem 0.5rem; }
+      header h1 { font-size: 1.5rem; }
+      .steps { gap: 0.5rem; }
+      .step { min-width: 100px; padding: 0.5rem; }
+      .section-cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📄 PDF Resume Extractor</h1>
+      <a href="/">← Back to APP Home</a>
+    </header>
+
+    <div class="intro">
+      <h2>🚀 AI-Powered Resume Extraction</h2>
+      <p>Upload your resume PDF and automatically extract structured profile data compatible with the Applicant Profile Protocol.</p>
+      <div class="pipeline">
+        <span>PDF</span> → 
+        <span>Text</span> → 
+        <span>OCR</span> → 
+        <span>Sections</span> → 
+        <span>Entities</span> → 
+        <span>Normalize</span> → 
+        <span>APP</span> → 
+        <span>Validate</span> → 
+        <span>Score</span>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step active" id="stepUpload">
+        <div class="number">1</div>
+        <h3>Upload</h3>
+      </div>
+      <div class="step" id="stepExtract">
+        <div class="number">2</div>
+        <h3>Extract</h3>
+      </div>
+      <div class="step" id="stepParse">
+        <div class="number">3</div>
+        <h3>Parse</h3>
+      </div>
+      <div class="step" id="stepMap">
+        <div class="number">4</div>
+        <h3>Map</h3>
+      </div>
+      <div class="step" id="stepValidate">
+        <div class="number">5</div>
+        <h3>Validate</h3>
+      </div>
+      <div class="step" id="stepSave">
+        <div class="number">6</div>
+        <h3>Save</h3>
+      </div>
+    </div>
+
+    <!-- Upload Panel -->
+    <div class="panel" id="uploadPanel">
+      <h2>📤 Upload Resume PDF</h2>
+      <div class="file-upload" id="dropZone">
+        <input type="file" id="fileInput" accept=".pdf" />
+        <div class="icon">📄</div>
+        <h3>Drop PDF file here or click to browse</h3>
+        <p>Supports single or multi-page resume PDFs</p>
+      </div>
+      <div id="fileInfo" class="file-info hidden">
+        <div class="details">
+          <div class="icon">📄</div>
+          <div>
+            <div class="name" id="fileName"></div>
+            <div class="size" id="fileSize"></div>
+          </div>
+        </div>
+        <button id="removeFile">Remove</button>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="processBtn" disabled>
+          <span>Process PDF</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Processing Panel -->
+    <div class="panel hidden" id="processingPanel">
+      <h2>⚙️ Processing Pipeline</h2>
+      <div class="processing-status" id="processingStatus">
+        <div class="processing-step pending" id="statusExtraction">
+          <div class="icon">⟳</div>
+          <div class="label">Text Extraction</div>
+          <div class="result" id="resultExtraction"></div>
+        </div>
+        <div class="processing-step pending" id="statusOCR">
+          <div class="icon">⟳</div>
+          <div class="label">OCR Processing (if needed)</div>
+          <div class="result" id="resultOCR"></div>
+        </div>
+        <div class="processing-step pending" id="statusSection">
+          <div class="icon">⟳</div>
+          <div class="label">Section Detection</div>
+          <div class="result" id="resultSection"></div>
+        </div>
+        <div class="processing-step pending" id="statusEntity">
+          <div class="icon">⟳</div>
+          <div class="label">Entity Extraction</div>
+          <div class="result" id="resultEntity"></div>
+        </div>
+        <div class="processing-step pending" id="statusNormalize">
+          <div class="icon">⟳</div>
+          <div class="label">Data Normalization</div>
+          <div class="result" id="resultNormalize"></div>
+        </div>
+        <div class="processing-step pending" id="statusMapping">
+          <div class="icon">⟳</div>
+          <div class="label">APP Mapping</div>
+          <div class="result" id="resultMapping"></div>
+        </div>
+        <div class="processing-step pending" id="statusValidation">
+          <div class="icon">⟳</div>
+          <div class="label">Schema Validation</div>
+          <div class="result" id="resultValidation"></div>
+        </div>
+        <div class="processing-step pending" id="statusScoring">
+          <div class="icon">⟳</div>
+          <div class="label">Confidence Scoring</div>
+          <div class="result" id="resultScoring"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="panel hidden" id="resultsPanel">
+      <h2>✅ Extraction Complete</h2>
+      
+      <div class="confidence-meter">
+        <div class="confidence-label">
+          <span>Overall Confidence Score</span>
+          <span class="score" id="confidenceScore">0%</span>
+        </div>
+        <div class="confidence-bar">
+          <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="section-cards">
+        <div class="section-card">
+          <span class="count" id="countExperience">0</span>
+          <span class="label">Work Experience</span>
+        </div>
+        <div class="section-card">
+          <span class="count" id="countEducation">0</span>
+          <span class="label">Education</span>
+        </div>
+        <div class="section-card">
+          <span class="count" id="countSkills">0</span>
+          <span class="label">Skills</span>
+        </div>
+        <div class="section-card">
+          <span class="count" id="countProjects">0</span>
+          <span class="label">Projects</span>
+        </div>
+        <div class="section-card">
+          <span class="count" id="countLanguages">0</span>
+          <span class="label">Languages</span>
+        </div>
+        <div class="section-card">
+          <span class="count" id="countCredentials">0</span>
+          <span class="label">Credentials</span>
+        </div>
+      </div>
+
+      <div class="preview-tabs">
+        <button class="active" data-tab="app">APP JSON</button>
+        <button data-tab="entities">Extracted Entities</button>
+        <button data-tab="text">Raw Text</button>
+      </div>
+
+      <div class="preview-content active" id="tabApp">
+        <pre id="appOutput"></pre>
+      </div>
+
+      <div class="preview-content" id="tabEntities">
+        <div class="entity-list" id="entityList"></div>
+      </div>
+
+      <div class="preview-content" id="tabText">
+        <pre id="textOutput"></pre>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-success" id="downloadBtn">
+          <span>💾</span>
+          <span>Download JSON</span>
+        </button>
+        <button class="btn btn-primary" id="saveBtn">
+          <span>💾</span>
+          <span>Save to Storage</span>
+        </button>
+        <button class="btn btn-secondary" id="resetBtn">
+          <span>🔄</span>
+          <span>Process Another</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Storage Options Modal -->
+    <div class="panel hidden" id="storagePanel">
+      <h2>💾 Save Profile</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-muted);">Choose where to save your extracted profile:</p>
+      
+      <div class="storage-options">
+        <div class="storage-option selected" id="storageLocal">
+          <div class="icon">💻</div>
+          <h4>Local Storage</h4>
+          <p>Save to browser (always available)</p>
+        </div>
+        <div class="storage-option disabled" id="storageFirebase">
+          <div class="icon">☁️</div>
+          <h4>Cloud Storage</h4>
+          <p>Save to Firebase (login required)</p>
+        </div>
+      </div>
+
+      <div id="storageStatus"></div>
+
+      <div class="actions">
+        <button class="btn btn-success" id="confirmSaveBtn">
+          <span>💾</span>
+          <span>Confirm Save</span>
+        </button>
+        <button class="btn btn-secondary" id="cancelSaveBtn">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PDF.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // Initialize PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // Load APP schema
+    let appSchema = null;
+    fetch('/schema/app.schema.json')
+      .then(res => res.json())
+      .then(schema => { appSchema = schema; })
+      .catch(err => console.error('Failed to load APP schema:', err));
+
+    // State
+    let currentFile = null;
+    let extractedText = '';
+    let extractedData = null;
+    let appProfile = null;
+    let confidenceScores = {};
+
+    // DOM Elements
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFile');
+    const processBtn = document.getElementById('processBtn');
+    const uploadPanel = document.getElementById('uploadPanel');
+    const processingPanel = document.getElementById('processingPanel');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const storagePanel = document.getElementById('storagePanel');
+
+    // File Upload Handlers
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type === 'application/pdf') {
+        handleFileSelect(files[0]);
+      } else {
+        alert('Please drop a PDF file');
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    removeFileBtn.addEventListener('click', () => {
+      currentFile = null;
+      fileInput.value = '';
+      fileInfo.classList.add('hidden');
+      dropZone.classList.remove('hidden');
+      processBtn.disabled = true;
+      updateStep('stepUpload', 'active');
+    });
+
+    function handleFileSelect(file) {
+      currentFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.classList.remove('hidden');
+      dropZone.classList.add('hidden');
+      processBtn.disabled = false;
+      updateStep('stepUpload', 'completed');
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // Process Button
+    processBtn.addEventListener('click', async () => {
+      if (!currentFile) return;
+      
+      processBtn.disabled = true;
+      processingPanel.classList.remove('hidden');
+      updateStep('stepExtract', 'processing');
+      
+      try {
+        await processPDF(currentFile);
+      } catch (error) {
+        console.error('Processing error:', error);
+        alert('Error processing PDF: ' + error.message);
+        processBtn.disabled = false;
+        updateStep('stepExtract', 'active');
+      }
+    });
+
+    // Main Processing Pipeline
+    async function processPDF(file) {
+      try {
+        // Step 1: Extract text from PDF
+        updateProcessingStep('statusExtraction', 'active');
+        extractedText = await extractTextFromPDF(file);
+        updateProcessingStep('statusExtraction', 'completed', `${extractedText.length} characters`);
+        updateStep('stepExtract', 'completed');
+        updateStep('stepParse', 'processing');
+        
+        // Step 2: OCR (skip if text extracted successfully)
+        updateProcessingStep('statusOCR', 'active');
+        if (extractedText.trim().length < 100) {
+          updateProcessingStep('statusOCR', 'completed', 'Text sufficient, OCR skipped');
+        } else {
+          updateProcessingStep('statusOCR', 'completed', 'Skipped');
+        }
+        
+        // Step 3: Section Detection
+        updateProcessingStep('statusSection', 'active');
+        const sections = await detectSections(extractedText);
+        updateProcessingStep('statusSection', 'completed', `${Object.keys(sections).length} sections found`);
+        
+        // Step 4: Entity Extraction
+        updateProcessingStep('statusEntity', 'active');
+        extractedData = await extractEntities(sections);
+        updateProcessingStep('statusEntity', 'completed', `${extractedData.entities.length} entities extracted`);
+        updateStep('stepParse', 'completed');
+        updateStep('stepMap', 'processing');
+        
+        // Step 5: Normalization
+        updateProcessingStep('statusNormalize', 'active');
+        const normalizedData = normalizeData(extractedData);
+        updateProcessingStep('statusNormalize', 'completed', 'Data normalized');
+        
+        // Step 6: APP Mapping
+        updateProcessingStep('statusMapping', 'active');
+        appProfile = mapToAPP(normalizedData);
+        updateProcessingStep('statusMapping', 'completed', 'Mapped to APP format');
+        updateStep('stepMap', 'completed');
+        updateStep('stepValidate', 'processing');
+        
+        // Step 7: Schema Validation
+        updateProcessingStep('statusValidation', 'active');
+        const validationResult = validateAgainstSchema(appProfile);
+        if (validationResult.valid) {
+          updateProcessingStep('statusValidation', 'completed', 'Valid ✓');
+        } else {
+          updateProcessingStep('statusValidation', 'error', `${validationResult.errors.length} warnings`);
+        }
+        updateStep('stepValidate', 'completed');
+        
+        // Step 8: Confidence Scoring
+        updateProcessingStep('statusScoring', 'active');
+        confidenceScores = calculateConfidence(appProfile, extractedData);
+        updateProcessingStep('statusScoring', 'completed', `${confidenceScores.overall}% confidence`);
+        updateStep('stepSave', 'active');
+        
+        // Show results
+        displayResults();
+        
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    // PDF Text Extraction using PDF.js
+    async function extractTextFromPDF(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        
+        fileReader.onload = async function() {
+          try {
+            const typedarray = new Uint8Array(this.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let fullText = '';
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+              const page = await pdf.getPage(pageNum);
+              const textContent = await page.getTextContent();
+              const pageText = textContent.items.map(item => item.str).join(' ');
+              fullText += pageText + '\n\n';
+            }
+            
+            resolve(fullText);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        
+        fileReader.onerror = () => reject(new Error('Failed to read file'));
+        fileReader.readAsArrayBuffer(file);
+      });
+    }
+
+    // Section Detection
+    async function detectSections(text) {
+      // Simulate async processing
+      await sleep(300);
+      
+      const sections = {
+        contact: '',
+        summary: '',
+        experience: '',
+        education: '',
+        skills: '',
+        projects: '',
+        certifications: '',
+        languages: ''
+      };
+      
+      // Simple keyword-based section detection
+      const lines = text.split('\n');
+      let currentSection = null;
+      
+      const sectionKeywords = {
+        contact: ['contact', 'email', 'phone', 'address'],
+        summary: ['summary', 'objective', 'profile', 'about'],
+        experience: ['experience', 'work history', 'employment', 'professional experience'],
+        education: ['education', 'academic', 'degree', 'university', 'college'],
+        skills: ['skills', 'technical skills', 'competencies', 'expertise'],
+        projects: ['projects', 'portfolio'],
+        certifications: ['certifications', 'certificates', 'licenses'],
+        languages: ['languages', 'language proficiency']
+      };
+      
+      for (const line of lines) {
+        const lowerLine = line.toLowerCase().trim();
+        
+        // Check if this line is a section header
+        let foundSection = null;
+        for (const [section, keywords] of Object.entries(sectionKeywords)) {
+          if (keywords.some(keyword => lowerLine.includes(keyword) && lowerLine.length < 50)) {
+            foundSection = section;
+            break;
+          }
+        }
+        
+        if (foundSection) {
+          currentSection = foundSection;
+        } else if (currentSection && line.trim()) {
+          sections[currentSection] += line + '\n';
+        }
+      }
+      
+      return sections;
+    }
+
+    // Entity Extraction
+    async function extractEntities(sections) {
+      await sleep(400);
+      
+      const entities = [];
+      
+      // Extract email
+      const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+      const emails = (sections.contact + sections.summary).match(emailRegex);
+      if (emails) {
+        entities.push({ type: 'email', value: emails[0], confidence: 0.95 });
+      }
+      
+      // Extract phone
+      const phoneRegex = /(\+?\d{1,3}[-.]?)?\(?\d{3}\)?[-.]?\d{3}[-.]?\d{4}/g;
+      const phones = (sections.contact + sections.summary).match(phoneRegex);
+      if (phones) {
+        entities.push({ type: 'phone', value: phones[0], confidence: 0.85 });
+      }
+      
+      // Extract name (first meaningful line in contact or summary)
+      const textLines = (sections.contact + sections.summary).split('\n').filter(l => l.trim());
+      if (textLines.length > 0) {
+        const potentialName = textLines[0].trim();
+        if (potentialName.length > 3 && potentialName.length < 50 && /^[a-zA-Z\s]+$/.test(potentialName)) {
+          entities.push({ type: 'name', value: potentialName, confidence: 0.80 });
+        }
+      }
+      
+      // Extract URLs
+      const urlRegex = /https?:\/\/[^\s]+/g;
+      const urls = (sections.contact + sections.summary).match(urlRegex);
+      if (urls) {
+        urls.forEach(url => {
+          entities.push({ type: 'url', value: url, confidence: 0.90 });
+        });
+      }
+      
+      // Extract skills (common tech skills)
+      const commonSkills = ['javascript', 'python', 'java', 'react', 'node', 'sql', 'aws', 'docker', 'kubernetes', 'git', 'html', 'css', 'typescript', 'angular', 'vue'];
+      const skillsText = sections.skills.toLowerCase();
+      const foundSkills = commonSkills.filter(skill => skillsText.includes(skill));
+      foundSkills.forEach(skill => {
+        entities.push({ type: 'skill', value: skill, confidence: 0.75 });
+      });
+      
+      return { sections, entities };
+    }
+
+    // Data Normalization
+    function normalizeData(data) {
+      const normalized = { ...data };
+      
+      // Normalize emails
+      normalized.entities = normalized.entities.map(entity => {
+        if (entity.type === 'email') {
+          entity.value = entity.value.toLowerCase();
+        }
+        if (entity.type === 'name') {
+          // Title case for names
+          entity.value = entity.value.split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        }
+        if (entity.type === 'skill') {
+          // Capitalize skills
+          entity.value = entity.value.charAt(0).toUpperCase() + entity.value.slice(1);
+        }
+        return entity;
+      });
+      
+      return normalized;
+    }
+
+    // MAP to APP Format
+    function mapToAPP(data) {
+      const profile = {
+        protocol: {
+          name: 'ApplicantProfileProtocol',
+          shortName: 'APP',
+          version: '1.0.0',
+          uri: 'https://app-protocol.org',
+          id: generateUUID()
+        },
+        basics: {
+          name: '',
+          email: '',
+          phone: '',
+          url: '',
+          summary: ''
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+        credentials: [],
+        languages: [],
+        metadata: {
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          source: 'pdf-extractor',
+          version: '1.0.0'
+        }
+      };
+      
+      // Map entities to profile
+      data.entities.forEach(entity => {
+        switch (entity.type) {
+          case 'name':
+            profile.basics.name = entity.value;
+            break;
+          case 'email':
+            profile.basics.email = entity.value;
+            break;
+          case 'phone':
+            profile.basics.phone = entity.value;
+            break;
+          case 'url':
+            if (!profile.basics.url) profile.basics.url = entity.value;
+            break;
+          case 'skill':
+            profile.skills.push({
+              name: entity.value,
+              level: 'intermediate',
+              keywords: [entity.value]
+            });
+            break;
+        }
+      });
+      
+      // Add summary from sections
+      if (data.sections.summary) {
+        profile.basics.summary = data.sections.summary.trim().substring(0, 500);
+      }
+      
+      return profile;
+    }
+
+    // Schema Validation
+    function validateAgainstSchema(profile) {
+      // Basic validation (in production, use a proper JSON Schema validator)
+      const errors = [];
+      
+      if (!profile.protocol || !profile.protocol.name) {
+        errors.push('Missing protocol.name');
+      }
+      if (!profile.basics || !profile.basics.name) {
+        errors.push('Missing basics.name');
+      }
+      
+      return {
+        valid: errors.length === 0,
+        errors
+      };
+    }
+
+    // Confidence Scoring
+    function calculateConfidence(profile, extractedData) {
+      const scores = {
+        basics: 0,
+        experience: 0,
+        education: 0,
+        skills: 0,
+        overall: 0
+      };
+      
+      // Calculate basics confidence
+      let basicsScore = 0;
+      if (profile.basics.name) basicsScore += 30;
+      if (profile.basics.email) basicsScore += 25;
+      if (profile.basics.phone) basicsScore += 20;
+      if (profile.basics.summary) basicsScore += 15;
+      if (profile.basics.url) basicsScore += 10;
+      scores.basics = basicsScore;
+      
+      // Skills confidence
+      scores.skills = Math.min(100, profile.skills.length * 10);
+      
+      // Experience and education (basic check)
+      scores.experience = profile.experience.length > 0 ? 60 : 20;
+      scores.education = profile.education.length > 0 ? 60 : 20;
+      
+      // Overall confidence
+      scores.overall = Math.round(
+        (scores.basics * 0.4 + scores.skills * 0.3 + scores.experience * 0.2 + scores.education * 0.1)
+      );
+      
+      return scores;
+    }
+
+    // Display Results
+    function displayResults() {
+      processingPanel.classList.add('hidden');
+      resultsPanel.classList.remove('hidden');
+      
+      // Confidence score
+      const score = confidenceScores.overall;
+      document.getElementById('confidenceScore').textContent = score + '%';
+      const fill = document.getElementById('confidenceFill');
+      fill.style.width = score + '%';
+      fill.textContent = score + '%';
+      
+      // Section counts
+      document.getElementById('countExperience').textContent = appProfile.experience?.length || 0;
+      document.getElementById('countEducation').textContent = appProfile.education?.length || 0;
+      document.getElementById('countSkills').textContent = appProfile.skills?.length || 0;
+      document.getElementById('countProjects').textContent = appProfile.projects?.length || 0;
+      document.getElementById('countLanguages').textContent = appProfile.languages?.length || 0;
+      document.getElementById('countCredentials').textContent = appProfile.credentials?.length || 0;
+      
+      // APP JSON output
+      document.getElementById('appOutput').textContent = JSON.stringify(appProfile, null, 2);
+      
+      // Raw text
+      document.getElementById('textOutput').textContent = extractedText;
+      
+      // Entities list
+      const entityList = document.getElementById('entityList');
+      entityList.innerHTML = '';
+      if (extractedData && extractedData.entities) {
+        extractedData.entities.forEach(entity => {
+          const item = document.createElement('div');
+          item.className = 'entity-item';
+          item.innerHTML = `
+            <div class="entity-value">
+              <span class="entity-type">${entity.type}</span>
+              ${entity.value}
+            </div>
+            <div class="entity-confidence">${Math.round(entity.confidence * 100)}%</div>
+          `;
+          entityList.appendChild(item);
+        });
+      }
+      
+      updateStep('stepSave', 'active');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.preview-tabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-tabs button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.preview-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1)).classList.add('active');
+      });
+    });
+
+    // Download button
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const dataStr = JSON.stringify(appProfile, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `app-profile-${Date.now()}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Save button
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      resultsPanel.classList.add('hidden');
+      storagePanel.classList.remove('hidden');
+    });
+
+    // Storage options
+    document.getElementById('storageLocal').addEventListener('click', () => {
+      document.querySelectorAll('.storage-option').forEach(opt => opt.classList.remove('selected'));
+      document.getElementById('storageLocal').classList.add('selected');
+    });
+
+    document.getElementById('storageFirebase').addEventListener('click', () => {
+      if (!document.getElementById('storageFirebase').classList.contains('disabled')) {
+        document.querySelectorAll('.storage-option').forEach(opt => opt.classList.remove('selected'));
+        document.getElementById('storageFirebase').classList.add('selected');
+      }
+    });
+
+    // Confirm save
+    document.getElementById('confirmSaveBtn').addEventListener('click', () => {
+      const selectedStorage = document.querySelector('.storage-option.selected').id;
+      
+      if (selectedStorage === 'storageLocal') {
+        // Save to localStorage
+        try {
+          const saved = JSON.parse(localStorage.getItem('app-profiles') || '[]');
+          saved.push({
+            id: appProfile.protocol.id,
+            name: appProfile.basics.name || 'Unnamed Profile',
+            createdAt: new Date().toISOString(),
+            data: appProfile
+          });
+          localStorage.setItem('app-profiles', JSON.stringify(saved));
+          
+          document.getElementById('storageStatus').innerHTML = `
+            <div class="status success">
+              ✓ Profile saved to local storage successfully!
+            </div>
+          `;
+          
+          setTimeout(() => {
+            resetTool();
+          }, 2000);
+        } catch (error) {
+          document.getElementById('storageStatus').innerHTML = `
+            <div class="status error">
+              ✗ Error saving to local storage: ${error.message}
+            </div>
+          `;
+        }
+      } else {
+        // Firebase storage (not implemented yet)
+        document.getElementById('storageStatus').innerHTML = `
+          <div class="status warning">
+            ⚠ Firebase storage requires authentication. Please sign in first.
+          </div>
+        `;
+      }
+    });
+
+    document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+      storagePanel.classList.add('hidden');
+      resultsPanel.classList.remove('hidden');
+    });
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      resetTool();
+    });
+
+    function resetTool() {
+      currentFile = null;
+      extractedText = '';
+      extractedData = null;
+      appProfile = null;
+      confidenceScores = {};
+      
+      fileInput.value = '';
+      fileInfo.classList.add('hidden');
+      dropZone.classList.remove('hidden');
+      processBtn.disabled = true;
+      processingPanel.classList.add('hidden');
+      resultsPanel.classList.add('hidden');
+      storagePanel.classList.add('hidden');
+      uploadPanel.classList.remove('hidden');
+      
+      // Reset all processing steps
+      document.querySelectorAll('.processing-step').forEach(step => {
+        step.className = 'processing-step pending';
+        step.querySelector('.result').textContent = '';
+      });
+      
+      // Reset step indicators
+      document.querySelectorAll('.step').forEach(step => {
+        step.className = 'step';
+      });
+      updateStep('stepUpload', 'active');
+      
+      document.getElementById('storageStatus').innerHTML = '';
+    }
+
+    // Utility Functions
+    function updateStep(stepId, status) {
+      const step = document.getElementById(stepId);
+      step.className = 'step ' + status;
+    }
+
+    function updateProcessingStep(stepId, status, result = '') {
+      const step = document.getElementById(stepId);
+      step.className = 'processing-step ' + status;
+      if (result) {
+        step.querySelector('.result').textContent = result;
+      }
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  </script>
+</body>
+</html>

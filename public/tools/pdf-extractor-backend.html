@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Resume Extractor - APP (Backend Powered)</title>
+    <meta name="description" content="AI-powered PDF resume extraction with OpenAI and Google Vision OCR">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: left;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-email {
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .auth-required {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .auth-required h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .auth-required p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 60px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #f8f9ff;
+        }
+
+        .upload-zone:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .progress-container {
+            margin: 30px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .status-message {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .confidence-high {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .confidence-medium {
+            background: #FF9800;
+            color: white;
+        }
+
+        .confidence-low {
+            background: #f44336;
+            color: white;
+        }
+
+        .json-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-height: 500px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #c62828;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .badge-beta {
+            background: #FF9800;
+            color: white;
+        }
+
+        .badge-ai {
+            background: #9C27B0;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Auth -->
+        <div class="header">
+            <div class="header-title">
+                <h1>
+                    📄 PDF Resume Extractor
+                    <span class="badge badge-ai">AI Powered</span>
+                </h1>
+                <p>Extract resume data with OpenAI GPT-4 & Google Vision OCR</p>
+            </div>
+            
+            <div class="auth-section" id="authSection">
+                <div id="loginPrompt">
+                    <button class="btn" onclick="signInWithGoogle()">Sign in with Google</button>
+                </div>
+                
+                <div id="userInfo" class="user-info hidden">
+                    <img id="userAvatar" class="user-avatar" alt="User avatar">
+                    <div>
+                        <div class="user-email" id="userEmail"></div>
+                        <button class="btn btn-secondary" onclick="signOutUser()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-card">
+            <!-- Auth Required State -->
+            <div id="authRequired" class="auth-required hidden">
+                <h2>🔒 Authentication Required</h2>
+                <p>Please sign in to use the PDF Resume Extractor</p>
+                <p style="color: #999; font-size: 0.9em;">Your extracted profiles will be securely saved to your account</p>
+            </div>
+
+            <!-- Authenticated State -->
+            <div id="authenticatedContent" class="hidden">
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Drop PDF resume here or click to upload</div>
+                    <div class="upload-hint">Supports all PDF formats including scanned documents (max 10MB)</div>
+                    <input type="file" id="fileInput" accept=".pdf" />
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill">0%</div>
+                    </div>
+                    <div class="status-message" id="statusMessage">Initializing...</div>
+                </div>
+
+                <!-- Results -->
+                <div class="results-container" id="resultsContainer">
+                    <h2>✅ Extraction Complete</h2>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="statsGrid"></div>
+                    
+                    <!-- Confidence Score -->
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div id="confidenceBadge"></div>
+                    </div>
+
+                    <!-- JSON Preview -->
+                    <h3>APP JSON Profile</h3>
+                    <pre class="json-preview" id="jsonPreview"></pre>
+
+                    <!-- Actions -->
+                    <div class="action-buttons">
+                        <button class="btn" onclick="downloadJSON()">Download JSON</button>
+                        <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                        <button class="btn btn-secondary" onclick="viewInBuilder()">Open in Builder</button>
+                        <button class="btn btn-secondary" onclick="reset()">Extract Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        
+        // Firebase configuration for app-protocol-35716
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxC0qYHwRuARh_NQj2TqTmD-NcUt17dV4",
+            authDomain: "app-protocol-35716.firebaseapp.com",
+            projectId: "app-protocol-35716",
+            storageBucket: "app-protocol-35716.firebasestorage.app",
+            messagingSenderId: "586415487890",
+            appId: "1:586415487890:web:6437ebbae9045ca14fdf4b",
+            measurementId: "G-ZK44CSVXV4"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+        
+        // Make auth available globally
+        window.auth = auth;
+        window.googleProvider = googleProvider;
+        window.signInWithPopup = signInWithPopup;
+        window.GoogleAuthProvider = GoogleAuthProvider;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        
+        // Initialize auth state listener
+        window.initAuthListener();
+    </script>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:3000/api'; // Change for production
+        
+        // State
+        let currentUser = null;
+        let currentProfile = null;
+        let currentJobId = null;
+
+        // Initialize auth listener
+        window.initAuthListener = function() {
+            window.onAuthStateChanged(window.auth, (user) => {
+                currentUser = user;
+                updateUIForAuthState(user);
+            });
+        };
+
+        function updateUIForAuthState(user) {
+            const loginPrompt = document.getElementById('loginPrompt');
+            const userInfo = document.getElementById('userInfo');
+            const authRequired = document.getElementById('authRequired');
+            const authenticatedContent = document.getElementById('authenticatedContent');
+
+            if (user) {
+                // User is signed in
+                loginPrompt.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+                authRequired.classList.add('hidden');
+                authenticatedContent.classList.remove('hidden');
+
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/40';
+            } else {
+                // User is signed out
+                loginPrompt.classList.remove('hidden');
+                userInfo.classList.add('hidden');
+                authRequired.classList.remove('hidden');
+                authenticatedContent.classList.add('hidden');
+            }
+        }
+
+        // Auth functions
+        window.signInWithGoogle = async function() {
+            try {
+                await window.signInWithPopup(window.auth, window.googleProvider);
+            } catch (error) {
+                showError('Sign in failed: ' + error.message);
+            }
+        };
+
+        window.signOutUser = async function() {
+            try {
+                await window.signOut(window.auth);
+                reset();
+            } catch (error) {
+                showError('Sign out failed: ' + error.message);
+            }
+        };
+
+        // Get Firebase ID token
+        async function getIdToken() {
+            if (!currentUser) throw new Error('Not authenticated');
+            return await currentUser.getIdToken();
+        }
+
+        // Upload zone interactions
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle file upload
+        async function handleFile(file) {
+            if (!file.type === 'application/pdf') {
+                showError('Please upload a PDF file');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size must be under 10MB');
+                return;
+            }
+
+            try {
+                showProgress(0, 'Uploading PDF...');
+                
+                const idToken = await getIdToken();
+                const formData = new FormData();
+                formData.append('pdf', file);
+
+                const response = await fetch(`${API_BASE_URL}/pdf/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Upload failed');
+                }
+
+                const data = await response.json();
+                currentJobId = data.jobId;
+
+                showProgress(10, 'Extracting text from PDF...');
+                
+                // Start polling for status
+                pollJobStatus();
+
+            } catch (error) {
+                showError(error.message);
+                hideProgress();
+            }
+        }
+
+        // Poll job status
+        async function pollJobStatus() {
+            try {
+                const idToken = await getIdToken();
+                const response = await fetch(`${API_BASE_URL}/pdf/status/${currentJobId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to check status');
+
+                const data = await response.json();
+
+                // Update progress based on status
+                switch (data.status) {
+                    case 'processing':
+                        showProgress(30, 'Processing with AI...');
+                        setTimeout(pollJobStatus, 2000);
+                        break;
+                    case 'ocr':
+                        showProgress(50, 'Performing OCR on scanned document...');
+                        setTimeout(pollJobStatus, 3000);
+                        break;
+                    case 'extracting':
+                        showProgress(70, 'Extracting entities with OpenAI...');
+                        setTimeout(pollJobStatus, 2000);
+                        break;
+                    case 'mapping':
+                        showProgress(85, 'Mapping to APP format...');
+                        setTimeout(pollJobStatus, 1000);
+                        break;
+                    case 'completed':
+                        showProgress(100, 'Complete!');
+                        setTimeout(() => {
+                            hideProgress();
+                            displayResults(data.profile, data.confidence);
+                        }, 500);
+                        break;
+                    case 'failed':
+                        throw new Error(data.error || 'Processing failed');
+                    default:
+                        setTimeout(pollJobStatus, 2000);
+                }
+
+            } catch (error) {
+                showError(error.message);
+                hideProgress();
+            }
+        }
+
+        // Display results
+        function displayResults(profile, confidence) {
+            currentProfile = profile;
+
+            // Show results container
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            // Display stats
+            const stats = [
+                { label: 'Experience', value: profile.experience?.length || 0 },
+                { label: 'Education', value: profile.education?.length || 0 },
+                { label: 'Skills', value: profile.skills?.length || 0 },
+                { label: 'Projects', value: profile.projects?.length || 0 }
+            ];
+
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = stats.map(stat => `
+                <div class="stat-card">
+                    <div class="stat-number">${stat.value}</div>
+                    <div class="stat-label">${stat.label}</div>
+                </div>
+            `).join('');
+
+            // Display confidence
+            const confidencePercent = Math.round(confidence * 100);
+            let confidenceClass = 'confidence-low';
+            if (confidencePercent >= 80) confidenceClass = 'confidence-high';
+            else if (confidencePercent >= 60) confidenceClass = 'confidence-medium';
+
+            document.getElementById('confidenceBadge').innerHTML = `
+                <div class="confidence-badge ${confidenceClass}">
+                    Confidence: ${confidencePercent}%
+                </div>
+            `;
+
+            // Display JSON
+            document.getElementById('jsonPreview').textContent = JSON.stringify(profile, null, 2);
+        }
+
+        // Progress functions
+        function showProgress(percent, message) {
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').textContent = percent + '%';
+            document.getElementById('statusMessage').textContent = message;
+        }
+
+        function hideProgress() {
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = '❌ ' + message;
+            
+            const mainCard = document.querySelector('.main-card');
+            mainCard.insertBefore(errorDiv, mainCard.firstChild);
+            
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Action functions
+        window.downloadJSON = function() {
+            const blob = new Blob([JSON.stringify(currentProfile, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `profile-${currentProfile.basics?.name?.replace(/\s+/g, '-') || 'resume'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        window.copyToClipboard = function() {
+            navigator.clipboard.writeText(JSON.stringify(currentProfile, null, 2));
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = '✅ Copied to clipboard!';
+            
+            const mainCard = document.querySelector('.main-card');
+            mainCard.insertBefore(successDiv, mainCard.firstChild);
+            
+            setTimeout(() => successDiv.remove(), 3000);
+        };
+
+        window.viewInBuilder = function() {
+            localStorage.setItem('app-profile-draft', JSON.stringify(currentProfile));
+            window.location.href = '../tools/builder.html';
+        };
+
+        window.reset = function() {
+            currentProfile = null;
+            currentJobId = null;
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+        };
+    </script>
+</body>
+</html>
