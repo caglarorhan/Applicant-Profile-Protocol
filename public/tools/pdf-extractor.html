@@ -658,23 +658,25 @@
     // Initialize PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // Load APP schema
-    let appSchema = null;
-    fetch('/schema/app.schema.json')
-      .then(res => res.json())
-      .then(schema => { appSchema = schema; })
-      .catch(err => console.error('Failed to load APP schema:', err));
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load APP schema
+      let appSchema = null;
+      fetch('/schema/app.schema.json')
+        .then(res => res.json())
+        .then(schema => { appSchema = schema; })
+        .catch(err => console.error('Failed to load APP schema:', err));
 
-    // State
-    let currentFile = null;
-    let extractedText = '';
-    let extractedData = null;
-    let appProfile = null;
-    let confidenceScores = {};
+      // State
+      let currentFile = null;
+      let extractedText = '';
+      let extractedData = null;
+      let appProfile = null;
+      let confidenceScores = {};
 
-    // DOM Elements
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
+      // DOM Elements
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
@@ -1291,6 +1293,8 @@
         return v.toString(16);
       });
     }
+
+    }); // End DOMContentLoaded
   </script>
 </body>
 </html>
