@@ -45,6 +45,7 @@ app.use(helmet({
         "'unsafe-eval'", // Required for AJV schema compilation in validator
         "https://cdnjs.cloudflare.com" // PDF.js and AJV CDN
       ],
+      scriptSrcAttr: ["'unsafe-inline'"], // Required for onclick handlers
       workerSrc: ["'self'", "blob:"], // Allow PDF.js web workers
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
