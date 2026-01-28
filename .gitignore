@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+.env.local
+.env.*.local
 .vscode/
 .DS_Store
 coverage/
@@ -11,3 +13,10 @@ yarn-error.log*
 *.log
 *.tsbuildinfo
 .cache/
+
+# Secret files and credentials (but allow .example files)
+backend/.env
+backend/config/firebase-admin-key.json
+backend/config/*-key.json
+!backend/config/*.example.json
+!backend/config/.gitkeep
