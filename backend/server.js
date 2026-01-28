@@ -42,7 +42,8 @@ app.use(helmet({
       scriptSrc: [
         "'self'",
         "'unsafe-inline'", // Required for inline scripts in tools
-        "https://cdnjs.cloudflare.com" // PDF.js CDN
+        "'unsafe-eval'", // Required for AJV schema compilation in validator
+        "https://cdnjs.cloudflare.com" // PDF.js and AJV CDN
       ],
       workerSrc: ["'self'", "blob:"], // Allow PDF.js web workers
       styleSrc: ["'self'", "'unsafe-inline'"],
