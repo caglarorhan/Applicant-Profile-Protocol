@@ -260,16 +260,25 @@
     async function loadSchema() {
       try {
         const res = await fetch('/schema/app-1.0.json');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch schema: ${res.status} ${res.statusText}`);
+        }
         schema = await res.json();
+        
+        // Remove $schema property to avoid AJV validation issues
+        delete schema.$schema;
+        
         ajv = new ajv2020({ allErrors: true, strict: false });
         ajvFormats(ajv);
         validateFn = ajv.compile(schema);
+        console.log('✅ Schema loaded successfully');
       } catch(e) {
         console.error('Failed to load schema:', e);
         document.getElementById('result').innerHTML = `
           <div class="result invalid">
             <h3><span class="icon">⚠️</span> Schema Load Error</h3>
-            <p>Could not load the APP schema. Please try refreshing the page.</p>
+            <p>Could not load the APP schema: ${e.message}</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Please check your connection and try refreshing the page.</p>
           </div>
         `;
       }
