@@ -772,32 +772,70 @@
         });
       }
 
-      // Main Processing Pipeline
+      // Main Processing Pipeline - Using Backend API
       async function processPDF(file) {
-      try {
-        // Step 1: Extract text from PDF
-        updateProcessingStep('statusExtraction', 'active');
-        extractedText = await extractTextFromPDF(file);
-        updateProcessingStep('statusExtraction', 'completed', `${extractedText.length} characters`);
-        updateStep('stepExtract', 'completed');
-        updateStep('stepParse', 'processing');
-        
-        // Step 2: OCR (skip if text extracted successfully)
-        updateProcessingStep('statusOCR', 'active');
-        if (extractedText.trim().length < 100) {
-          updateProcessingStep('statusOCR', 'completed', 'Text sufficient, OCR skipped');
-        } else {
-          updateProcessingStep('statusOCR', 'completed', 'Skipped');
+        try {
+          // Step 1: Upload and extract
+          updateProcessingStep('statusExtraction', 'active');
+          updateStep('stepExtract', 'processing');
+          
+          const formData = new FormData();
+          formData.append('pdf', file);
+          
+          const response = await fetch('/api/pdf/extract', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to process PDF');
+          }
+          
+          const data = await response.json();
+          
+          if (!data.success) {
+            throw new Error(data.error || 'Processing failed');
+          }
+          
+          updateProcessingStep('statusExtraction', 'completed', `${data.metadata.textLength} characters`);
+          updateStep('stepExtract', 'completed');
+          
+          // Step 2: OCR (handled by backend)
+          updateProcessingStep('statusOCR', 'completed', 'Completed by backend');
+          
+          // Step 3: Section Detection (handled by backend)
+          updateStep('stepParse', 'processing');
+          updateProcessingStep('statusSection', 'completed', 'AI processed');
+          
+          // Step 4: Entity Extraction (handled by backend)
+          updateProcessingStep('statusEntity', 'completed', 'AI extracted');
+          updateStep('stepParse', 'completed');
+          
+          // Step 5: Map to APP format (already done by backend)
+          updateStep('stepMap', 'processing');
+          updateProcessingStep('statusMapping', 'completed', 'Mapped to APP format');
+          appProfile = data.profile;
+          updateStep('stepMap', 'completed');
+          
+          // Step 6: Validation
+          updateStep('stepValidate', 'processing');
+          updateProcessingStep('statusValidation', 'active');
+          const validation = data.validation;
+          if (validation.valid) {
+            updateProcessingStep('statusValidation', 'completed', '✓ Valid APP format');
+          } else {
+            updateProcessingStep('statusValidation', 'completed', `⚠ ${validation.errors?.length || 0} warnings`);
+          }
+          updateStep('stepValidate', 'completed');
+          
+          // Show results
+          displayResults();
+          
+        } catch (error) {
+          console.error('Processing error:', error);
+          throw error;
         }
-        
-        // Step 3: Section Detection
-        updateProcessingStep('statusSection', 'active');
-        const sections = await detectSections(extractedText);
-        updateProcessingStep('statusSection', 'completed', `${Object.keys(sections).length} sections found`);
-        
-        // Step 4: Entity Extraction
-        updateProcessingStep('statusEntity', 'active');
-        extractedData = await extractEntities(sections);
+      }
         updateProcessingStep('statusEntity', 'completed', `${extractedData.entities.length} entities extracted`);
         updateStep('stepParse', 'completed');
         updateStep('stepMap', 'processing');
