@@ -677,90 +677,103 @@
       // DOM Elements
       const dropZone = document.getElementById('dropZone');
       const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const removeFileBtn = document.getElementById('removeFile');
-    const processBtn = document.getElementById('processBtn');
-    const uploadPanel = document.getElementById('uploadPanel');
-    const processingPanel = document.getElementById('processingPanel');
-    const resultsPanel = document.getElementById('resultsPanel');
-    const storagePanel = document.getElementById('storagePanel');
+      const fileInfo = document.getElementById('fileInfo');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      const removeFileBtn = document.getElementById('removeFile');
+      const processBtn = document.getElementById('processBtn');
+      const uploadPanel = document.getElementById('uploadPanel');
+      const processingPanel = document.getElementById('processingPanel');
+      const resultsPanel = document.getElementById('resultsPanel');
+      const storagePanel = document.getElementById('storagePanel');
 
-    // File Upload Handlers
-    dropZone.addEventListener('click', () => fileInput.click());
-    
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
+      // Debug: Check if elements exist
+      console.log('dropZone:', dropZone);
+      console.log('fileInput:', fileInput);
 
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
+      // File Upload Handlers
+      if (dropZone && fileInput) {
+        dropZone.addEventListener('click', () => {
+          console.log('dropZone clicked');
+          fileInput.click();
+        });
+        
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('dragover');
+        });
 
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const files = e.dataTransfer.files;
-      if (files.length > 0 && files[0].type === 'application/pdf') {
-        handleFileSelect(files[0]);
-      } else {
-        alert('Please drop a PDF file');
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('dragover');
+          const files = e.dataTransfer.files;
+          if (files.length > 0 && files[0].type === 'application/pdf') {
+            handleFileSelect(files[0]);
+          } else {
+            alert('Please drop a PDF file');
+          }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+          }
+        });
       }
-    });
 
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        handleFileSelect(e.target.files[0]);
+      if (removeFileBtn) {
+        removeFileBtn.addEventListener('click', () => {
+          currentFile = null;
+          fileInput.value = '';
+          fileInfo.classList.add('hidden');
+          dropZone.classList.remove('hidden');
+          processBtn.disabled = true;
+          updateStep('stepUpload', 'active');
+        });
       }
-    });
 
-    removeFileBtn.addEventListener('click', () => {
-      currentFile = null;
-      fileInput.value = '';
-      fileInfo.classList.add('hidden');
-      dropZone.classList.remove('hidden');
-      processBtn.disabled = true;
-      updateStep('stepUpload', 'active');
-    });
-
-    function handleFileSelect(file) {
-      currentFile = file;
-      fileName.textContent = file.name;
-      fileSize.textContent = formatFileSize(file.size);
-      fileInfo.classList.remove('hidden');
-      dropZone.classList.add('hidden');
-      processBtn.disabled = false;
-      updateStep('stepUpload', 'completed');
+      function handleFileSelect(file) {
+        currentFile = file;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileInfo.classList.remove('hidden');
+        dropZone.classList.add('hidden');
+        processBtn.disabled = false;
+        updateStep('stepUpload', 'completed');
     }
 
     function formatFileSize(bytes) {
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-    }
-
-    // Process Button
-    processBtn.addEventListener('click', async () => {
-      if (!currentFile) return;
-      
-      processBtn.disabled = true;
-      processingPanel.classList.remove('hidden');
-      updateStep('stepExtract', 'processing');
-      
-      try {
-        await processPDF(currentFile);
-      } catch (error) {
-        console.error('Processing error:', error);
-        alert('Error processing PDF: ' + error.message);
-        processBtn.disabled = false;
-        updateStep('stepExtract', 'active');
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
       }
-    });
 
-    // Main Processing Pipeline
-    async function processPDF(file) {
+      // Process Button
+      if (processBtn) {
+        processBtn.addEventListener('click', async () => {
+          if (!currentFile) return;
+          
+          processBtn.disabled = true;
+          processingPanel.classList.remove('hidden');
+          updateStep('stepExtract', 'processing');
+          
+          try {
+            await processPDF(currentFile);
+          } catch (error) {
+            console.error('Processing error:', error);
+            alert('Error processing PDF: ' + error.message);
+            processBtn.disabled = false;
+            updateStep('stepExtract', 'active');
+          }
+        });
+      }
+
+      // Main Processing Pipeline
+      async function processPDF(file) {
       try {
         // Step 1: Extract text from PDF
         updateProcessingStep('statusExtraction', 'active');
