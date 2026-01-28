@@ -101,7 +101,7 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
       success: true,
       profile: appProfile,
       validation: validation,
-      extractedText: text.substring(0, 1000), // Include first 1000 chars for debugging
+      extractedText: text, // Send full text for debugging
       aiExtractedData: aiResult.data, // Include raw AI extraction
       metadata: {
         pages: pdfData.numpages,

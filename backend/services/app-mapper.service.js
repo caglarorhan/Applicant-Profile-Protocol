@@ -29,6 +29,10 @@ const validate = ajv.compile(appSchema);
  * Map extracted data to APP format
  */
 export function mapToAPP(extractedData, userId) {
+  // Handle nested contactInformation if present
+  const contact = extractedData.contactInformation || extractedData;
+  const workExp = extractedData.workExperience || extractedData.experience;
+  
   const profile = {
     protocol: {
       name: 'ApplicantProfileProtocol',
@@ -38,17 +42,17 @@ export function mapToAPP(extractedData, userId) {
       id: uuidv4()
     },
     basics: {
-      name: extractedData.name || '',
-      email: extractedData.email || '',
-      phone: extractedData.phone || '',
-      url: extractedData.website || extractedData.linkedin || '',
-      summary: extractedData.summary || '',
-      location: extractedData.location ? {
-        address: extractedData.location.address || extractedData.location,
-        city: extractedData.location.city,
-        region: extractedData.location.region || extractedData.location.state,
-        postalCode: extractedData.location.postalCode,
-        countryCode: extractedData.location.countryCode || 'US'
+      name: contact.name || extractedData.name || '',
+      email: contact.email || extractedData.email || '',
+      phone: contact.phone || extractedData.phone || '',
+      url: contact.website || contact.LinkedIn || contact.linkedin || extractedData.website || extractedData.linkedin || '',
+      summary: contact.summary || extractedData.summary || '',
+      location: (contact.location || extractedData.location) ? {
+        address: (contact.location?.address || extractedData.location?.address || contact.location || extractedData.location),
+        city: contact.location?.city || extractedData.location?.city,
+        region: contact.location?.region || contact.location?.state || extractedData.location?.region || extractedData.location?.state,
+        postalCode: contact.location?.postalCode || extractedData.location?.postalCode,
+        countryCode: contact.location?.countryCode || extractedData.location?.countryCode || 'US'
       } : undefined,
       profiles: []
     },
@@ -68,30 +72,33 @@ export function mapToAPP(extractedData, userId) {
   };
 
   // Map social profiles
-  if (extractedData.linkedin) {
+  const linkedin = contact.LinkedIn || contact.linkedin || extractedData.linkedin;
+  const github = contact.GitHub || contact.github || extractedData.github;
+  
+  if (linkedin) {
     profile.basics.profiles.push({
       network: 'LinkedIn',
-      url: extractedData.linkedin,
-      username: extractUsernameFromURL(extractedData.linkedin, 'linkedin')
+      url: linkedin,
+      username: extractUsernameFromURL(linkedin, 'linkedin')
     });
   }
-  if (extractedData.github) {
+  if (github) {
     profile.basics.profiles.push({
       network: 'GitHub',
-      url: extractedData.github,
-      username: extractUsernameFromURL(extractedData.github, 'github')
+      url: github,
+      username: extractUsernameFromURL(github, 'github')
     });
   }
 
   // Map work experience
-  if (extractedData.experience && Array.isArray(extractedData.experience)) {
-    profile.experience = extractedData.experience.map(exp => ({
-      title: exp.title || exp.position || '',
-      company: exp.company || exp.organization || '',
+  if (workExp && Array.isArray(workExp)) {
+    profile.experience = workExp.map(exp => ({
+      title: exp.title || exp.position || exp.jobTitle || '',
+      company: exp.company || exp.organization || exp.employer || '',
       location: exp.location || '',
       startDate: normalizeDate(exp.startDate),
       endDate: normalizeDate(exp.endDate) || (exp.current ? 'Present' : ''),
-      summary: exp.description || exp.summary || '',
+      summary: exp.description || exp.summary || exp.responsibilities || '',
       highlights: exp.highlights || exp.achievements || [],
       keywords: exp.skills || []
     }));
