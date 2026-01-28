@@ -293,8 +293,16 @@
 
     // Switch input method
     function showMethod(method) {
-      document.querySelectorAll('.input-methods button').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      // Remove active class from all method buttons (not sample button)
+      document.querySelectorAll('.input-methods button:not(.sample-btn)').forEach(b => b.classList.remove('active'));
+      // Find and activate the button for this method
+      const buttons = document.querySelectorAll('.input-methods button:not(.sample-btn)');
+      buttons.forEach(btn => {
+        if ((method === 'paste' && btn.textContent.includes('Paste')) || 
+            (method === 'upload' && btn.textContent.includes('Upload'))) {
+          btn.classList.add('active');
+        }
+      });
       
       document.getElementById('paste-area').classList.toggle('hidden', method !== 'paste');
       document.getElementById('upload-area').classList.toggle('hidden', method !== 'upload');
@@ -332,8 +340,8 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         document.getElementById('json-input').value = e.target.result;
+        // Switch to paste view to show the loaded content
         showMethod('paste');
-        document.querySelector('.input-methods button').click();
       };
       reader.readAsText(file);
     }
@@ -453,12 +461,15 @@
     async function loadSample() {
       try {
         const res = await fetch('/examples/full.json');
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const sample = await res.text();
         document.getElementById('json-input').value = sample;
+        // Switch to paste view to show the loaded sample
         showMethod('paste');
-        document.querySelector('.input-methods button').click();
       } catch(e) {
-        alert('Failed to load sample');
+        alert('Failed to load sample: ' + e.message);
       }
     }
 
