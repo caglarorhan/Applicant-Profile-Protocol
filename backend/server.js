@@ -44,6 +44,7 @@ app.use(helmet({
         "'unsafe-inline'", // Required for inline scripts in tools
         "https://cdnjs.cloudflare.com" // PDF.js CDN
       ],
+      workerSrc: ["'self'", "blob:"], // Allow PDF.js web workers
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
@@ -98,10 +99,17 @@ app.get('/api', (req, res) => {
 // Serve static files (frontend HTML/CSS/JS)
 app.use(express.static(join(__dirname, '../public')));
 
+// Serve schema files
+app.use('/schema', express.static(join(__dirname, '../schema')));
+
 // Fallback to index.html for client-side routing
 app.get('*', (req, res, next) => {
   // Skip API routes
   if (req.url.startsWith('/api')) {
+    return next();
+  }
+  // Skip schema routes
+  if (req.url.startsWith('/schema')) {
     return next();
   }
   res.sendFile(join(__dirname, '../public/index.html'));
