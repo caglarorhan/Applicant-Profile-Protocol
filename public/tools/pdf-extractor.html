@@ -836,45 +836,6 @@
           throw error;
         }
       }
-        updateProcessingStep('statusEntity', 'completed', `${extractedData.entities.length} entities extracted`);
-        updateStep('stepParse', 'completed');
-        updateStep('stepMap', 'processing');
-        
-        // Step 5: Normalization
-        updateProcessingStep('statusNormalize', 'active');
-        const normalizedData = normalizeData(extractedData);
-        updateProcessingStep('statusNormalize', 'completed', 'Data normalized');
-        
-        // Step 6: APP Mapping
-        updateProcessingStep('statusMapping', 'active');
-        appProfile = mapToAPP(normalizedData);
-        updateProcessingStep('statusMapping', 'completed', 'Mapped to APP format');
-        updateStep('stepMap', 'completed');
-        updateStep('stepValidate', 'processing');
-        
-        // Step 7: Schema Validation
-        updateProcessingStep('statusValidation', 'active');
-        const validationResult = validateAgainstSchema(appProfile);
-        if (validationResult.valid) {
-          updateProcessingStep('statusValidation', 'completed', 'Valid ✓');
-        } else {
-          updateProcessingStep('statusValidation', 'error', `${validationResult.errors.length} warnings`);
-        }
-        updateStep('stepValidate', 'completed');
-        
-        // Step 8: Confidence Scoring
-        updateProcessingStep('statusScoring', 'active');
-        confidenceScores = calculateConfidence(appProfile, extractedData);
-        updateProcessingStep('statusScoring', 'completed', `${confidenceScores.overall}% confidence`);
-        updateStep('stepSave', 'active');
-        
-        // Show results
-        displayResults();
-        
-      } catch (error) {
-        throw error;
-      }
-    }
 
     // PDF Text Extraction using PDF.js
     async function extractTextFromPDF(file) {
