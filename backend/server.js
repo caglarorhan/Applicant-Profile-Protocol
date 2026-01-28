@@ -104,6 +104,9 @@ app.use(express.static(join(__dirname, '../public')));
 // Serve schema files
 app.use('/schema', express.static(join(__dirname, '../schema')));
 
+// Serve example files
+app.use('/examples', express.static(join(__dirname, '../examples')));
+
 // Schema version aliases
 app.get('/schema/app-:version.json', (req, res) => {
   // Map versioned requests to actual schema file
