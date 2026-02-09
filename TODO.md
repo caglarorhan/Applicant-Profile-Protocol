@@ -9,6 +9,28 @@
 - [ ] **Create video tutorials** — Profile creation, validation, export workflows
 - [ ] **Internationalization** — Support for non-English profiles
 - [ ] **ATS integration guides** — Workday, Greenhouse, Lever connectors
+- [ ] **PDF Extractor Enhancements**:
+  - [ ] Implement true OCR (Tesseract.js integration)
+  - [ ] Add machine learning entity extraction
+  - [ ] Multi-language support for resumes
+  - [ ] Advanced layout analysis for complex formats
+  - [ ] Batch processing support
+  - [ ] Browser extension version
+  - [ ] Mobile app version
+
+## Completed (v1.1.0 - Jan 2026)
+
+- [x] **PDF Resume Extractor Tool** — New online tool for extracting APP profiles from PDF resumes
+  - [x] PDF.js integration for text extraction
+  - [x] Intelligent section detection (experience, education, skills, etc.)
+  - [x] Entity recognition (contact info, skills, dates, degrees)
+  - [x] Data normalization and APP mapping
+  - [x] Schema validation with confidence scoring
+  - [x] localStorage support for offline use
+  - [x] Firebase/Firestore integration for cloud storage
+  - [x] Profile sync between local and cloud
+  - [x] Modular architecture (PDFProcessor + StorageManager)
+- [x] Documentation: PDF-EXTRACTOR.md and FIREBASE-SETUP.md
 
 ## Completed (v1.0.1 - Jan 2026)
 

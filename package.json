@@ -39,6 +39,7 @@
     "export:europass": "node src/exporters/europass.js examples/full.json > dist/full.europass.xml",
     "export:hrxml": "node src/exporters/hrxml.js examples/full.json > dist/full.hrxml.xml",
     "export:jsonld": "node src/exporters/jsonld.js examples/full.json > dist/full.jsonld.json",
+    "test:pdf": "node -e \"require('./src/pdf-processor.test.js'); const tests = new PDFProcessorTests(); tests.runAll();\"",
     "version:sync": "node scripts/sync-version.js",
     "preversion": "npm run version:sync",
     "postversion": "git push && git push --tags"
