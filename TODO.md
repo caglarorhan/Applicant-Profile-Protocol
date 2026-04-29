@@ -4,7 +4,7 @@
 
 ## Pending
 
-- [ ] **Register with SchemaStore** — Submit PR to [SchemaStore](https://github.com/SchemaStore/schemastore) for IDE autocomplete and validation support. File pattern: `*.app.json`.
+- [ ] **Register with SchemaStore** — Submit PR to [SchemaStore](https://github.com/SchemaStore/schemastore) for IDE autocomplete and validation support. File pattern: `*.app-profile.json` (avoid broad patterns like `*.app.json` that can conflict with files such as `tsconfig.app.json`).
 - [ ] **Add real-world adoption examples** — Document companies/projects using APP
 - [ ] **Create video tutorials** — Profile creation, validation, export workflows
 - [ ] **Internationalization** — Support for non-English profiles

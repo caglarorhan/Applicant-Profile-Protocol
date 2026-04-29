@@ -35,7 +35,7 @@ function validateFile(instancePath) {
 
 const arg = process.argv[2];
 if (!arg) {
-  console.error('Usage: node src/validate.js <path/to/app.json>');
+  console.error('Usage: node src/validate.js <path/to/profile.app-profile.json>');
   process.exit(2);
 }
 

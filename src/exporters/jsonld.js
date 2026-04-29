@@ -40,7 +40,7 @@ function toJSONLD(app) {
 
 const arg = process.argv[2];
 if (!arg) {
-  console.error('Usage: node src/exporters/jsonld.js <path/to/app.json>');
+  console.error('Usage: node src/exporters/jsonld.js <path/to/profile.app-profile.json>');
   process.exit(2);
 }
 const app = loadJSON(arg);

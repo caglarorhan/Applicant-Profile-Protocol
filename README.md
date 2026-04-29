@@ -71,19 +71,19 @@ npm install @caglarorhan/applicant-profile-protocol
 
 ```bash
 # Validate an APP profile
-app validate your-profile.json
+app validate your-profile.app-profile.json
 
 # Export to JSON Resume format
-app export:jsonresume your-profile.json > resume.json
+app export:jsonresume your-profile.app-profile.json > resume.json
 
 # Export to Europass XML
-app export:europass your-profile.json > europass.xml
+app export:europass your-profile.app-profile.json > europass.xml
 
 # Export to HR-XML
-app export:hrxml your-profile.json > hrxml.xml
+app export:hrxml your-profile.app-profile.json > hrxml.xml
 
 # Export to JSON-LD (Schema.org)
-app export:jsonld your-profile.json > profile.jsonld
+app export:jsonld your-profile.app-profile.json > profile.jsonld
 ```
 
 ## Contents
@@ -131,6 +131,26 @@ Draft202012Validator.check_schema(schema)
 validate(instance=instance, schema=schema)
 print('valid')
 PY
+```
+
+### Avoid Schema Conflicts In Editors
+
+If you use SchemaStore-based JSON schema auto-detection (for example in VS Code), use an APP-specific filename such as `candidate.app-profile.json` instead of broad names like `*.app.json`.
+
+To opt in explicitly, add the schema URL at the top of your APP file:
+
+```json
+{
+  "$schema": "https://app-protocol.org/schema/app-1.0.json",
+  "protocol": {
+    "name": "ApplicantProfileProtocol",
+    "version": "1.0.0",
+    "id": "urn:app-protocol:profile:example"
+  },
+  "basics": {
+    "name": { "given": "Ada", "family": "Lovelace" }
+  }
+}
 ```
 
 ## Online Tools
