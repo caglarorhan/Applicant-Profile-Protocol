@@ -1,11 +1,11 @@
 {
   "name": "applicant-profile-protocol",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Applicant Profile Protocol (APP) - An open, JSON-based protocol for structured applicant profiles with validation and export tools",
   "repository": {
     "type": "git",
-    "url": "https://github.com/caglarorhan/Applicant-Profile-Protocol.git"
+    "url": "git+https://github.com/caglarorhan/Applicant-Profile-Protocol.git"
   },
   "keywords": [
     "resume",
@@ -65,10 +65,6 @@
     "node": ">=18.0.0"
   },
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/caglarorhan/Applicant-Profile-Protocol.git"
-  },
   "bugs": {
     "url": "https://github.com/caglarorhan/Applicant-Profile-Protocol/issues"
   },
