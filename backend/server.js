@@ -60,6 +60,9 @@ app.use(helmet({
 app.use(compression()); // Compress responses
 app.use(morgan('combined')); // Logging
 
+// Railway terminates TLS at a trusted reverse proxy and forwards the client IP.
+app.set('trust proxy', 1);
+
 // CORS configuration
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',

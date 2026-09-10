@@ -26,7 +26,7 @@ Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys):
 
 ```
 OPENAI_API_KEY=your-openai-api-key-here
-OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 ### 3. Google Cloud Vision API

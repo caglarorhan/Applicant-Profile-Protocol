@@ -295,7 +295,7 @@ FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 
 # OpenAI
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
-OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_MODEL=gpt-4o-mini
 
 # Google Cloud Vision
 GOOGLE_APPLICATION_CREDENTIALS=./config/google-cloud-key.json

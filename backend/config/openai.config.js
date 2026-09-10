@@ -5,6 +5,15 @@ dotenv.config();
 
 // Initialize OpenAI client
 let openai = null;
+const configuredModel = process.env.OPENAI_MODEL;
+const OPENAI_MODEL = configuredModel === 'gpt-4-turbo-preview'
+  ? 'gpt-4o-mini'
+  : (configuredModel || 'gpt-4o-mini');
+
+if (configuredModel === 'gpt-4-turbo-preview') {
+  console.warn('⚠️  OPENAI_MODEL gpt-4-turbo-preview is unavailable; using gpt-4o-mini instead.');
+}
+
 if (process.env.OPENAI_API_KEY) {
   openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -103,7 +112,7 @@ ${resumeText}
 Return ONLY valid JSON without any markdown formatting or explanations.`;
 
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      model: OPENAI_MODEL,
       messages: [
         {
           role: 'system',
@@ -164,7 +173,7 @@ ${JSON.stringify(extractedData, null, 2)}
 Return JSON with confidence scores for: basics, experience, education, skills, overall`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: OPENAI_MODEL,
       messages: [
         {
           role: 'user',
