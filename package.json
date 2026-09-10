@@ -1,6 +1,6 @@
 {
   "name": "applicant-profile-protocol",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "Applicant Profile Protocol (APP) - An open, JSON-based protocol for structured applicant profiles with validation and export tools",
   "repository": {
