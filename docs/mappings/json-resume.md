@@ -44,15 +44,16 @@ Education
 - `institution` → `institution`
 - `area` → `area`
 - `degree` → `studyType`
-- `start` → `startDate`
-- `end` → `endDate`
+- `start` → `startDate` (YYYY → YYYY-01-01)
+- `end` → `endDate` (YYYY → YYYY-01-01)
 - `grade` → `score`
 
 Skills
 - APP `skills[]` → JSON Resume `skills[]`
 - `name` → `name`
 - `level` → `level`
-- `aliases[]` + `technologies` from experience → `keywords[]`
+- `aliases[]` → `keywords[]`
+- Matching `experience[].technologies[]` values are added to the corresponding skill's `keywords[]`
 
 Projects
 - APP `projects[]` → JSON Resume `projects[]`

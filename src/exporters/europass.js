@@ -44,6 +44,13 @@ function toEuropassXML(app) {
     </Language>
   `).join('\n');
 
+  const skills = (app.skills || []).map(skill => `
+    <Skill>
+      <Name>${esc(skill.name)}</Name>
+      ${skill.level ? `<Level>${esc(skill.level)}</Level>` : ''}
+    </Skill>
+  `).join('\n');
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <EuropassCV>
   <Identification>
@@ -71,6 +78,9 @@ function toEuropassXML(app) {
   <Languages>
     ${languages}
   </Languages>
+  <Skills>
+    ${skills}
+  </Skills>
 </EuropassCV>`;
   return xml;
 }

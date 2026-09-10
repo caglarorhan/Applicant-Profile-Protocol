@@ -46,7 +46,7 @@ Education and Training
 Skills
 - APP `skills[]` → `<Skills>` group
 - `name` → `<Skill>`
-- `level` (if present) → attribute or text
+- `level` (if present) → `<Level>`
 
 Languages
 - APP `languages[]` → `<Languages>` with `<Language>` entries

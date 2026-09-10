@@ -83,7 +83,9 @@
         <li>Basics → Person fields: <code>name</code>, <code>email</code>, <code>url</code></li>
         <li>Skills → <code>knowsAbout</code> entries; optionally use <code>DefinedTerm</code></li>
         <li>Credentials → <code>hasCredential</code> with <code>EducationalOccupationalCredential</code></li>
-        <li>Experience → Consider <code>Role</code> and <code>Organization</code>; minimal mapping is acceptable</li>
+        <li>Experience → <code>worksFor</code> organizations containing <code>OrganizationRole</code> entries</li>
+        <li>Education → <code>alumniOf</code> educational organizations and degree credentials in <code>hasCredential</code></li>
+        <li>Credential issuer → <code>recognizedBy</code> organization</li>
       </ul>
 
       <h2>Validation</h2>
@@ -93,7 +95,7 @@
       </ul>
 
       <h2>Export</h2>
-      <p>A helper exporter is provided at <code>src/exporters/jsonld.js</code> to generate a minimal JSON-LD overlay from APP basics, skills, and credentials.</p>
+      <p>A helper exporter is provided at <code>src/exporters/jsonld.js</code> to generate a JSON-LD overlay from APP basics, skills, experience, education, and credentials.</p>
     </main>
 
     <footer>

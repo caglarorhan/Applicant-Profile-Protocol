@@ -55,11 +55,13 @@ APP reserves the top-level field `semantic` for the JSON-LD object:
 - Basics → Person fields: `name`, `email`, `url`
 - Skills → `knowsAbout` entries; optionally use `DefinedTerm`
 - Credentials → `hasCredential` with `EducationalOccupationalCredential`
-- Experience → Consider `Role` and `Organization`; minimal mapping is acceptable
+- Experience → `worksFor` organizations containing `OrganizationRole` entries
+- Education → `alumniOf` educational organizations and degree credentials in `hasCredential`
+- Credential issuer → `recognizedBy` organization
 
 ## Validation
 - JSON-LD is not validated by the APP JSON Schema.
 - Use JSON-LD tooling (e.g., RDF libraries) if needed; otherwise basic structural checks suffice.
 
 ## Export
-A helper exporter is provided at `src/exporters/jsonld.js` to generate a minimal JSON-LD overlay from APP basics, skills, and credentials.
+A helper exporter is provided at `src/exporters/jsonld.js` to generate a JSON-LD overlay from APP basics, skills, experience, education, and credentials.

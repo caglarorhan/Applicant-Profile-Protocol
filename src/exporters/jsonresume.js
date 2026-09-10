@@ -8,6 +8,7 @@ function loadJSON(p) {
 
 function yyyymmToDate(ym) {
   if (!ym) return undefined;
+  if (/^\d{4}$/.test(ym)) return `${ym}-01-01`;
   return `${ym}-01`;
 }
 
@@ -31,16 +32,25 @@ function toJSONResume(app) {
     institution: ed.institution,
     area: ed.area,
     studyType: ed.degree,
-    startDate: ed.start,
-    endDate: ed.end,
+    startDate: yyyymmToDate(ed.start),
+    endDate: yyyymmToDate(ed.end),
     score: ed.grade
   }));
 
-  const skills = (app.skills || []).map(sk => ({
-    name: sk.name,
-    level: sk.level,
-    keywords: sk.aliases || []
-  }));
+  const experienceTechnologies = (app.experience || []).flatMap(exp => exp.technologies || []);
+  const skills = (app.skills || []).map(skill => {
+    const aliases = skill.aliases || [];
+    const skillNames = [skill.name, ...aliases].map(value => value.toLowerCase());
+    const matchingTechnologies = experienceTechnologies.filter(technology =>
+      skillNames.includes(technology.toLowerCase())
+    );
+
+    return {
+      name: skill.name,
+      level: skill.level,
+      keywords: [...new Set([...aliases, ...matchingTechnologies])]
+    };
+  });
 
   const projects = (app.projects || []).map(pr => ({
     name: pr.name,
