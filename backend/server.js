@@ -114,7 +114,7 @@ app.get('/schema/app-:version.json', (req, res) => {
 });
 
 // Fallback to index.html for client-side routing
-app.get('*', (req, res, next) => {
+app.get('/{*splat}', (req, res, next) => {
   // Skip API routes
   if (req.url.startsWith('/api')) {
     return next();
@@ -127,7 +127,7 @@ app.get('*', (req, res, next) => {
 });
 
 // 404 handler for API routes only
-app.use('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.method} ${req.url} not found`,
