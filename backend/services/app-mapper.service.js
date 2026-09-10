@@ -42,19 +42,20 @@ export function mapToAPP(extractedData, userId) {
       id: uuidv4()
     },
     basics: {
-      name: contact.name || extractedData.name || '',
-      email: contact.email || extractedData.email || '',
-      phone: contact.phone || extractedData.phone || '',
-      url: contact.website || contact.LinkedIn || contact.linkedin || extractedData.website || extractedData.linkedin || '',
-      summary: contact.summary || extractedData.summary || '',
+      name: toPersonName(contact.name || extractedData.name),
+      headline: contact.headline || extractedData.headline,
+      summary: contact.summary || extractedData.summary,
+      contact: {
+        email: contact.email || extractedData.email,
+        phone: contact.phone || extractedData.phone,
+        website: contact.website || extractedData.website,
+        social: []
+      },
       location: (contact.location || extractedData.location) ? {
-        address: (contact.location?.address || extractedData.location?.address || contact.location || extractedData.location),
         city: contact.location?.city || extractedData.location?.city,
         region: contact.location?.region || contact.location?.state || extractedData.location?.region || extractedData.location?.state,
-        postalCode: contact.location?.postalCode || extractedData.location?.postalCode,
-        countryCode: contact.location?.countryCode || extractedData.location?.countryCode || 'US'
+        country: contact.location?.country || contact.location?.countryCode || extractedData.location?.country || extractedData.location?.countryCode
       } : undefined,
-      profiles: []
     },
     experience: [],
     education: [],
@@ -76,46 +77,48 @@ export function mapToAPP(extractedData, userId) {
   const github = contact.GitHub || contact.github || extractedData.github;
   
   if (linkedin) {
-    profile.basics.profiles.push({
-      network: 'LinkedIn',
+    profile.basics.contact.social.push({
+      label: 'LinkedIn',
       url: linkedin,
-      username: extractUsernameFromURL(linkedin, 'linkedin')
     });
   }
   if (github) {
-    profile.basics.profiles.push({
-      network: 'GitHub',
+    profile.basics.contact.social.push({
+      label: 'GitHub',
       url: github,
-      username: extractUsernameFromURL(github, 'github')
     });
   }
 
   // Map work experience
   if (workExp && Array.isArray(workExp)) {
-    profile.experience = workExp.map(exp => ({
-      title: exp.title || exp.position || exp.jobTitle || '',
-      company: exp.company || exp.organization || exp.employer || '',
-      location: exp.location || '',
-      startDate: normalizeDate(exp.startDate),
-      endDate: normalizeDate(exp.endDate) || (exp.current ? 'Present' : ''),
-      summary: exp.description || exp.summary || exp.responsibilities || '',
-      highlights: exp.highlights || exp.achievements || [],
-      keywords: exp.skills || []
-    }));
+    profile.experience = workExp.map(exp => {
+      const mapped = {
+        role: exp.title || exp.position || exp.jobTitle || exp.role,
+        organization: { name: getOrganizationName(exp.company || exp.organization || exp.employer) },
+        start: normalizeYearMonth(exp.startDate || exp.start),
+        current: Boolean(exp.current),
+        highlights: exp.highlights || exp.achievements || [],
+        technologies: exp.technologies || exp.skills || []
+      };
+
+      const location = toLocation(exp.location);
+      if (location) mapped.location = location;
+      if (!mapped.current && (exp.endDate || exp.end)) mapped.end = normalizeYearMonth(exp.endDate || exp.end);
+      if (exp.employmentType) mapped.employmentType = exp.employmentType;
+      return removeUndefined(mapped);
+    });
   }
 
   // Map education
   if (extractedData.education && Array.isArray(extractedData.education)) {
     profile.education = extractedData.education.map(edu => ({
       institution: edu.institution || edu.school || '',
-      studyType: edu.degree || edu.studyType || '',
+      degree: edu.degree || edu.studyType,
       area: edu.field || edu.major || edu.area || '',
-      startDate: normalizeDate(edu.startDate),
-      endDate: normalizeDate(edu.endDate) || (edu.graduated ? normalizeDate(edu.graduationDate) : ''),
-      score: edu.gpa || edu.score || '',
-      courses: edu.courses || [],
-      honors: edu.honors || []
-    }));
+      start: normalizeYear(edu.startDate || edu.start),
+      end: normalizeYear(edu.endDate || edu.end || (edu.graduated ? edu.graduationDate : undefined)),
+      grade: edu.gpa || edu.score
+    })).map(removeUndefined);
   }
 
   // Map skills
@@ -123,8 +126,8 @@ export function mapToAPP(extractedData, userId) {
     if (Array.isArray(extractedData.skills)) {
       profile.skills = extractedData.skills.map(skill => ({
         name: typeof skill === 'string' ? skill : skill.name,
-        level: skill.level || 'intermediate',
-        keywords: [typeof skill === 'string' ? skill : skill.name]
+        level: normalizeSkillLevel(typeof skill === 'string' ? undefined : skill.level),
+        aliases: typeof skill === 'string' ? undefined : skill.aliases
       }));
     } else if (typeof extractedData.skills === 'object') {
       // Skills categorized by type
@@ -133,9 +136,7 @@ export function mapToAPP(extractedData, userId) {
           skillList.forEach(skill => {
             profile.skills.push({
               name: skill,
-              level: 'intermediate',
-              keywords: [skill],
-              category: category
+              level: 'Intermediate'
             });
           });
         }
@@ -148,39 +149,35 @@ export function mapToAPP(extractedData, userId) {
     profile.projects = extractedData.projects.map(proj => ({
       name: proj.name || proj.title || '',
       description: proj.description || '',
-      url: proj.url || proj.link || '',
-      startDate: normalizeDate(proj.startDate),
-      endDate: normalizeDate(proj.endDate),
+      links: (proj.url || proj.link) ? { website: proj.url || proj.link } : undefined,
+      stack: proj.technologies || proj.skills || [],
       highlights: proj.highlights || [],
-      keywords: proj.technologies || proj.skills || []
-    }));
+    })).map(removeUndefined);
   }
 
   // Map certifications
   if (extractedData.certifications && Array.isArray(extractedData.certifications)) {
     profile.credentials = extractedData.certifications.map(cert => ({
-      type: 'certification',
       name: cert.name || cert.title || '',
       issuer: cert.issuer || cert.organization || '',
-      date: normalizeDate(cert.date) || normalizeDate(cert.issueDate),
+      date: normalizeYearMonth(cert.date || cert.issueDate),
+      id: cert.id,
       url: cert.url || cert.verificationUrl || ''
-    }));
+    })).map(removeUndefined);
   }
 
   // Map languages
   if (extractedData.languages && Array.isArray(extractedData.languages)) {
     profile.languages = extractedData.languages.map(lang => ({
-      language: typeof lang === 'string' ? lang : lang.name || lang.language,
-      fluency: lang.fluency || lang.level || 'professional'
-    }));
+      name: typeof lang === 'string' ? lang : lang.name || lang.language,
+      proficiency: normalizeProficiency(typeof lang === 'string' ? undefined : lang.proficiency || lang.fluency || lang.level)
+    })).map(removeUndefined);
   }
 
   // Remove undefined fields
-  Object.keys(profile).forEach(key => {
-    if (profile[key] === undefined) {
-      delete profile[key];
-    }
-  });
+  profile.basics = removeUndefined(profile.basics);
+  profile.basics.contact = removeUndefined(profile.basics.contact);
+  profile.metadata = { created: profile.metadata.createdAt, updated: profile.metadata.updatedAt, source: 'Generated' };
 
   return profile;
 }
@@ -219,6 +216,65 @@ function normalizeDate(dateStr) {
   }
 
   return dateStr;
+}
+
+function normalizeYearMonth(value) {
+  if (!value || /present|current/i.test(value)) return undefined;
+  const text = String(value);
+  const monthNames = {
+    january: '01', february: '02', march: '03', april: '04', may: '05', june: '06',
+    july: '07', august: '08', september: '09', october: '10', november: '11', december: '12'
+  };
+  const namedMonth = text.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/i);
+  if (namedMonth) return `${namedMonth[2]}-${monthNames[namedMonth[1].toLowerCase()]}`;
+
+  const match = text.match(/(\d{4})[-/]?(\d{1,2})?/);
+  if (!match) return undefined;
+  return `${match[1]}-${String(match[2] || '01').padStart(2, '0')}`;
+}
+
+function normalizeYear(value) {
+  if (!value || /present|current/i.test(value)) return undefined;
+  const match = String(value).match(/\d{4}/);
+  return match ? match[0] : undefined;
+}
+
+function toPersonName(value) {
+  const name = String(value || '').trim().split(/\s+/).filter(Boolean);
+  return {
+    given: name.shift() || 'Unknown',
+    family: name.pop() || name[0] || 'Applicant',
+    ...(name.length ? { middle: name.join(' ') } : {})
+  };
+}
+
+function toLocation(value) {
+  if (!value) return undefined;
+  if (typeof value === 'object') return removeUndefined({
+    country: value.country || value.countryCode,
+    region: value.region || value.state,
+    city: value.city
+  });
+  const parts = String(value).split(',').map(part => part.trim()).filter(Boolean);
+  return removeUndefined({ city: parts[0], region: parts[1], country: parts[2] });
+}
+
+function getOrganizationName(value) {
+  return typeof value === 'object' ? value.name || '' : value || '';
+}
+
+function normalizeSkillLevel(value) {
+  const levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+  return levels.find(level => level.toLowerCase() === String(value || '').toLowerCase()) || 'Intermediate';
+}
+
+function normalizeProficiency(value) {
+  const levels = ['Basic', 'Conversational', 'Professional', 'Fluent', 'Native'];
+  return levels.find(level => level.toLowerCase() === String(value || '').toLowerCase()) || 'Professional';
+}
+
+function removeUndefined(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined && entry !== ''));
 }
 
 /**

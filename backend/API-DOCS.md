@@ -23,6 +23,12 @@ const idToken = await user.getIdToken();
 - General API: 10 requests per 15 minutes per IP
 - Upload endpoint: 5 uploads per 15 minutes per IP
 
+## PDF Extractor Requirements
+
+The public `POST /pdf/extract` endpoint requires an active `OPENAI_API_KEY` because it sends extracted resume text to OpenAI for structured data extraction. Google Vision credentials are additionally required for OCR processing of scanned PDFs. Firebase authentication is not required for this public endpoint, but is required for the queued `/pdf/upload` flow.
+
+The endpoint returns a profile validated against the APP schema. OCR is attempted when `pdf-parse` extracts fewer than 100 characters.
+
 ## Endpoints
 
 ### Health Check
@@ -56,6 +62,28 @@ Check if the API is ready (including Firebase connection).
 ---
 
 ### PDF Processing
+
+#### POST /pdf/extract
+
+Extract a PDF directly into an APP profile. This endpoint is used by the public PDF extractor page.
+
+**Auth:** Not required
+
+**Content-Type:** `multipart/form-data`
+
+**Body:**
+- `pdf` (file): PDF file (max 10MB)
+
+The response includes `profile`, `validation`, `extractedText`, and extraction metadata. Requests are limited to 5 uploads per 15 minutes per IP.
+
+**Error Responses:**
+
+- `400 Bad Request`: No file, invalid file type, or no extractable text
+- `413 Payload Too Large`: File exceeds the configured limit
+- `422 Unprocessable Entity`: No text found and OCR is unavailable
+- `429 Too Many Requests`: Upload rate limit exceeded
+
+---
 
 #### POST /pdf/upload
 

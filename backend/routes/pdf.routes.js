@@ -7,6 +7,8 @@ import {
   getProcessingStatus 
 } from '../controllers/pdf.controller.js';
 import { authenticateUser } from '../middleware/auth.middleware.js';
+import { uploadRateLimiter } from '../middleware/ratelimit.middleware.js';
+import { needsOCR, performOCR } from '../config/google-vision.config.js';
 
 const router = express.Router();
 
@@ -38,7 +40,7 @@ router.post('/upload', authenticateUser, upload.single('pdf'), uploadPDF);
  * Extract data from PDF (public endpoint, no auth required)
  * Returns APP JSON directly
  */
-router.post('/extract', upload.single('pdf'), async (req, res, next) => {
+router.post('/extract', uploadRateLimiter, upload.single('pdf'), async (req, res, next) => {
   try {
     console.log('📄 PDF extraction request received');
     
@@ -59,9 +61,23 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
     // Extract text from PDF
     console.log('📝 Extracting text from PDF...');
     const pdfData = await pdfParse(req.file.buffer);
-    const text = pdfData.text;
+    let text = pdfData.text;
     console.log(`✅ Extracted ${text.length} characters from ${pdfData.numpages} pages`);
-    console.log('📄 First 500 characters:', text.substring(0, 500));
+
+    let extractionMethod = 'pdf-parse';
+    if (needsOCR(text)) {
+      console.log('🔍 Insufficient PDF text detected; attempting OCR...');
+      const ocrResult = await performOCR(req.file.buffer);
+      if (ocrResult.success) {
+        text = ocrResult.text;
+        extractionMethod = 'google-vision-ocr';
+      } else if (!text.trim()) {
+        return res.status(422).json({
+          success: false,
+          error: 'No text found in PDF and OCR is unavailable.'
+        });
+      }
+    }
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({
@@ -73,7 +89,6 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
     // Extract structured data with AI
     console.log('🤖 Calling OpenAI for data extraction...');
     const aiResult = await extractWithAI(text);
-    console.log('🤖 AI extraction result:', JSON.stringify(aiResult, null, 2));
     
     if (!aiResult.success) {
       console.error('❌ AI extraction failed:', aiResult.error);
@@ -84,13 +99,11 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
     }
     
     console.log('✅ AI extracted data successfully');
-    console.log('📦 Extracted data structure:', Object.keys(aiResult.data));
     
     // Map to APP format
     console.log('🗺️ Mapping to APP format...');
     const appProfile = mapToAPP(aiResult.data);
     console.log('✅ Mapped to APP format');
-    console.log('👤 Profile basics:', appProfile.basics);
     
     // Validate
     console.log('✅ Validating...');
@@ -105,7 +118,8 @@ router.post('/extract', upload.single('pdf'), async (req, res, next) => {
       aiExtractedData: aiResult.data, // Include raw AI extraction
       metadata: {
         pages: pdfData.numpages,
-        textLength: text.length
+        textLength: text.length,
+        extractionMethod
       }
     });
 

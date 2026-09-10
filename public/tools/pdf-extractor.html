@@ -1211,7 +1211,9 @@
           const saved = JSON.parse(localStorage.getItem('app-profiles') || '[]');
           saved.push({
             id: appProfile.protocol.id,
-            name: appProfile.basics.name || 'Unnamed Profile',
+            name: appProfile.basics.name
+              ? [appProfile.basics.name.given, appProfile.basics.name.middle, appProfile.basics.name.family].filter(Boolean).join(' ')
+              : 'Unnamed Profile',
             createdAt: new Date().toISOString(),
             data: appProfile
           });
